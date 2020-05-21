@@ -13,7 +13,7 @@ namespace HelpDesk.Models.Users
 
         public String Name { get; set; }
         public String UserName { get; set; }
-        public int Phone { get; set; }
+        public String PhoneNumber { get; set; }
         public String Department { get; set; }
 
         [DataType(DataType.Password)]

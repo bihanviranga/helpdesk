@@ -9,7 +9,7 @@ namespace HelpDesk.Models.Users
     public class ApplicationUser : IdentityUser
     {
         public String Name { get; set; }
-        public int Phone { get; set; }
+        
         public String Department { get; set; }
     }
 }

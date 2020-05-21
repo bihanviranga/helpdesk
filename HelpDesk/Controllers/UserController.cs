@@ -23,6 +23,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
+        [Route("[controller]/Register")]
         public async Task<JsonResult> Register([FromBody]RegistrationModel model)
         {
             
@@ -32,14 +33,14 @@ namespace HelpDesk.Controllers
                 Email = model.Email,
                 Department = model.Department,
                 UserName = model.UserName,
-                Phone = model.Phone
+                PhoneNumber = model.PhoneNumber
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
 
 
             // Create Token
-            if (result.Succeeded && model.TokenAvailable == "null")
+                if (result.Succeeded && model.TokenAvailable == "null")
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -63,5 +64,34 @@ namespace HelpDesk.Controllers
 
             return Json("Your Email has Alrady Exist");
         }
+
+        [HttpPost]
+        [Route("[controller]/Login")]
+        public async Task<JsonResult> Login([FromBody]LoginModel model)
+        {
+            var user = await userManager.FindByEmailAsync(model.UserNameOrEmail);
+
+
+            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            {
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim("UserId", user.Id.ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(securityToken);
+                return Json(token);
+            }
+            return Json("faild To logIn");
+        }
+
+        
     }
 }
