@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HelpDesk.Model;
 using HelpDesk.Models;
 
 using HelpDesk.Models.Users;
@@ -31,16 +32,9 @@ namespace HelpDesk
         public void ConfigureServices(IServiceCollection services)
         {
             // connection DB 
-            services.AddDbContextPool<AppDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
+            services.AddDbContextPool<helpdeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
-                options.Password.RequiredLength = 3;
-                options.Password.RequiredUniqueChars = 0;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<AppDbContext>();
+            
 
             services.AddCors();
 
@@ -72,6 +66,13 @@ namespace HelpDesk
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options =>
+            {
+                options.WithOrigins("http://localhost:8080")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
