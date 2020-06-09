@@ -8,13 +8,15 @@ namespace HelpDesk.Models.Users
 {
     public class RegistrationModel
     {
-        [Required]
+       
         public String Email { get; set; }
-
-        public String Name { get; set; }
+        public String UserRole { get; set; }
         public String UserName { get; set; }
-        public String PhoneNumber { get; set; }
-        public String Department { get; set; }
+        public String Phone { get; set; }
+        public String FullName { get; set; }
+        public String CompanyId { get; set; }
+        public String UserType { get; set; }
+        public String UserImage { get; set; }
 
         [DataType(DataType.Password)]
         public String Password { get; set; }
