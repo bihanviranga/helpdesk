@@ -31,10 +31,11 @@ namespace HelpDesk
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddEntityFrameworkSqlServer();
             // connection DB 
             services.AddDbContextPool<helpdeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
 
-            
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddCors();
 
@@ -68,7 +69,7 @@ namespace HelpDesk
         {
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:8080")
+                options.WithOrigins("http://localhost:3000")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });

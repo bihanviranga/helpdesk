@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Model
 {
-    public partial class TktModule
+    public partial class Category
     {
-        public string ModuleId { get; set; }
+        public string CategoryId { get; set; }
         public string CompanyId { get; set; }
-        public string ModuleName { get; set; }
+        public string CategoryName { get; set; }
     }
 }
