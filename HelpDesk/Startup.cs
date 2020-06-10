@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities;
-using HelpDesk.Models.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

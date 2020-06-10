@@ -1,4 +1,5 @@
 ﻿using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
