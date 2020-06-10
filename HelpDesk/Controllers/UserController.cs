@@ -5,10 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HelpDesk.Controllers
 {
@@ -19,8 +18,6 @@ namespace HelpDesk.Controllers
         public UserController(IUserRepository User)
         {
             this._User = User;
-        
-
         }
 
         [HttpPost]
@@ -39,30 +36,33 @@ namespace HelpDesk.Controllers
                 UserImage = model.UserImage,
                 UserRole = model.UserRole,
                 PasswordHash = model.Password
-
             };
 
-             var Result = _User.Add(user);
+             //var Result = _User.Add(user);
 
             // Create Token
                 if ( model.TokenAvailable == null)
-            {
-                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Expires = DateTime.UtcNow.AddDays(1),   
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
-                };
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.Name, user.CompanyId.ToString())
+                        }),
+                        Expires = DateTime.UtcNow.AddDays(1),   
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
+                    };
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                var token = tokenHandler.WriteToken(securityToken);
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                    var token = tokenHandler.WriteToken(securityToken);
 
-                return Json(token);
-            }
-            else if ( model.TokenAvailable != null)
-            {
-                return Json("User Registration successful");
-            }
+                    return Json(token);
+                }
+                else if ( model.TokenAvailable != null)
+                {
+                    return Json("User Registration successful");
+                }
 
             return Json("Your Email has Alrady Exist");
         }
