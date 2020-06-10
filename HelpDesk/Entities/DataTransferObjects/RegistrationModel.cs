@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HelpDesk.Models.Users
+namespace HelpDesk.Entities.DataTransferObjects
 {
     public class RegistrationModel
     {
-       
+
         public String Email { get; set; }
         public String UserRole { get; set; }
         public String UserName { get; set; }

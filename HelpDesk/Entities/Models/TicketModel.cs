@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Entities.Models
 {
-    public partial class TicketMasterModel
+    public partial class TicketModel
     {
         public string TicketId { get; set; }
         public string CompanyId { get; set; }
@@ -17,7 +17,7 @@ namespace HelpDesk.Entities.Models
         public string TktPriority { get; set; }
         public string TktCreatedBy { get; set; }
         public string TktAssignedTo { get; set; }
-        public DateTime? TktCreatedDate { get; set; }
+        public DateTime TktCreatedDate { get; set; }
         public DateTime? TktClosedDate { get; set; }
         public DateTime? TktReopenedDate { get; set; }
         public DateTime? TktFirstResponseDate { get; set; }

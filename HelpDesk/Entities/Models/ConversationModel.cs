@@ -10,5 +10,6 @@ namespace HelpDesk.Entities.Models
         public string CvSender { get; set; }
         public string CvSenderType { get; set; }
         public DateTime CvSendDate { get; set; }
+        public string CvContent { get; set; }
     }
 }
