@@ -1,25 +1,31 @@
 ﻿using HelpDesk.Model;
 using HelpDesk.Models.Users;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HelpDesk.Controllers
 {
     public class UserController : Controller
     {
+         IUserRepository _User;
+
+        public UserController(IUserRepository User)
+        {
+            this._User = User;
+        }
 
         [HttpPost]
         [Route("[controller]/Register")]
-        public  JsonResult Register([FromBody]RegistrationModel model)
+        public JsonResult Register([FromBody]RegistrationModel model)
         {
             
-            var user = new TktUser
+            var user = new UserModel
             {
                 UserName = model.UserName,
                 CompanyId = model.CompanyId,
@@ -28,37 +34,42 @@ namespace HelpDesk.Controllers
                 Email = model.Email,
                 Phone = model.Phone,
                 UserImage = model.UserImage,
-                UserRole = model.UserRole
-
+                UserRole = model.UserRole,
+                PasswordHash = model.Password
             };
+
+             //var Result = _User.Add(user);
 
             // Create Token
                 if ( model.TokenAvailable == null)
-            {
-                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    // user store code shoud be here
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.Name, user.CompanyId.ToString())
+                        }),
+                        Expires = DateTime.UtcNow.AddDays(1),   
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
+                    };
 
-                    Expires = DateTime.UtcNow.AddDays(1),   
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
-                };
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                    var token = tokenHandler.WriteToken(securityToken);
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                var token = tokenHandler.WriteToken(securityToken);
-                return Json(token);
-            }
-            else if ( model.TokenAvailable != null)
-            {
-                return Json("User Registration successful");
-            }
+                    return Json(token);
+                }
+                else if ( model.TokenAvailable != null)
+                {
+                    return Json("User Registration successful");
+                }
 
             return Json("Your Email has Alrady Exist");
         }
 
         [HttpPost]
         [Route("[controller]/Login")]
-        public JsonResult Login([FromBody]LoginModel model)
+        public JsonResult Login([FromBody]LoginModel model) //not working yet
         {
             //user existing chechk code here ( not dev yet )
 

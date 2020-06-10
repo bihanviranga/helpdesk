@@ -6,36 +6,27 @@ namespace HelpDesk.Model
 {
     public partial class helpdeskContext : DbContext
     {
-        public helpdeskContext() { }
-
+      
         public helpdeskContext(DbContextOptions<helpdeskContext> options) : base(options) { }
 
-        public virtual DbSet<TktArticle> TktArticle { get; set; }
-        public virtual DbSet<TktCategory> TktCategory { get; set; }
-        public virtual DbSet<TktCompany> TktCompany { get; set; }
-        public virtual DbSet<TktCompanyBrand> TktCompanyBrand { get; set; }
-        public virtual DbSet<TktConversation> TktConversation { get; set; }
-        public virtual DbSet<TktModule> TktModule { get; set; }
-        public virtual DbSet<TktNotification> TktNotification { get; set; }
-        public virtual DbSet<TktProduct> TktProduct { get; set; }
-        public virtual DbSet<TktResTemplate> TktResTemplate { get; set; }
-        public virtual DbSet<TktTicketMaster> TktTicketMaster { get; set; }
-        public virtual DbSet<TktTicketOperator> TktTicketOperator { get; set; }
-        public virtual DbSet<TktTicketTimeline> TktTicketTimeline { get; set; }
-        public virtual DbSet<TktUser> TktUser { get; set; }
-        public virtual DbSet<TktUserToken> TktUserToken { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=helpdesk;Trusted_Connection=True;");
-            }
-        }
+        public virtual DbSet<ArticleModel> TktArticle { get; set; }
+        public virtual DbSet<CategoryModel> TktCategory { get; set; }
+        public virtual DbSet<CompanyModel> TktCompany { get; set; }
+        public virtual DbSet<CompanyBrandModel> TktCompanyBrand { get; set; }
+        public virtual DbSet<ConversationModel> TktConversation { get; set; }
+        public virtual DbSet<ModuleModel> TktModule { get; set; }
+        public virtual DbSet<NotificationModel> TktNotification { get; set; }
+        public virtual DbSet<ProductModel> TktProduct { get; set; }
+        public virtual DbSet<ResTemplateModel> TktResTemplate { get; set; }
+        public virtual DbSet<TicketMasterModel> TktTicketMaster { get; set; }
+        public virtual DbSet<TicketOperatorModel> TktTicketOperator { get; set; }
+        public virtual DbSet<TicketTimelineModel> TktTicketTimeline { get; set; }
+        public virtual DbSet<UserModel> TktUser { get; set; }
+        public virtual DbSet<UserToken> TktUserToken { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TktArticle>(entity =>
+            modelBuilder.Entity<ArticleModel>(entity =>
             {
                 entity.HasKey(e => e.ArticleId);
 
@@ -73,7 +64,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktCategory>(entity =>
+            modelBuilder.Entity<CategoryModel>(entity =>
             {
                 entity.HasKey(e => new { e.CategoryId, e.CompanyId });
 
@@ -92,7 +83,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktCompany>(entity =>
+            modelBuilder.Entity<CompanyModel>(entity =>
             {
                 entity.HasKey(e => e.CompanyId);
 
@@ -105,7 +96,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktCompanyBrand>(entity =>
+            modelBuilder.Entity<CompanyBrandModel>(entity =>
             {
                 entity.HasKey(e => new { e.BrandId, e.CompanyId });
 
@@ -124,7 +115,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktConversation>(entity =>
+            modelBuilder.Entity<ConversationModel>(entity =>
             {
                 entity.HasKey(e => new { e.CvId, e.TicketId });
 
@@ -153,7 +144,7 @@ namespace HelpDesk.Model
                 entity.Property(e => e.CvSenderType).IsRequired();
             });
 
-            modelBuilder.Entity<TktModule>(entity =>
+            modelBuilder.Entity<ModuleModel>(entity =>
             {
                 entity.HasKey(e => new { e.ModuleId, e.CompanyId });
 
@@ -172,7 +163,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktNotification>(entity =>
+            modelBuilder.Entity<NotificationModel>(entity =>
             {
                 entity.HasKey(e => new { e.NotifId, e.TicketId });
 
@@ -205,7 +196,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktProduct>(entity =>
+            modelBuilder.Entity<ProductModel>(entity =>
             {
                 entity.HasKey(e => new { e.ProductId, e.CompanyId });
 
@@ -224,7 +215,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktResTemplate>(entity =>
+            modelBuilder.Entity<ResTemplateModel>(entity =>
             {
                 entity.HasKey(e => e.TemplateId);
 
@@ -244,7 +235,7 @@ namespace HelpDesk.Model
                 entity.Property(e => e.TemplateAddedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<TktTicketMaster>(entity =>
+            modelBuilder.Entity<TicketMasterModel>(entity =>
             {
                 entity.HasKey(e => e.TicketId);
 
@@ -302,7 +293,7 @@ namespace HelpDesk.Model
                 entity.Property(e => e.TktReopenedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<TktTicketOperator>(entity =>
+            modelBuilder.Entity<TicketOperatorModel>(entity =>
             {
                 entity.HasKey(e => new { e.TktOperator, e.TiketId, e.SeqNo });
 
@@ -330,7 +321,7 @@ namespace HelpDesk.Model
                 entity.Property(e => e.AssignedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<TktTicketTimeline>(entity =>
+            modelBuilder.Entity<TicketTimelineModel>(entity =>
             {
                 entity.HasKey(e => new { e.TicketId, e.TxnDateTime })
                     .HasName("PK_Tkt_TicketTimeline_1");
@@ -362,7 +353,7 @@ namespace HelpDesk.Model
                 entity.Property(e => e.TxnValues).IsRequired();
             });
 
-            modelBuilder.Entity<TktUser>(entity =>
+            modelBuilder.Entity<UserModel>(entity =>
             {
                 entity.HasKey(e => new { e.CompanyId, e.UserName })
                     .HasName("PK_Tkt_userz");
@@ -386,7 +377,7 @@ namespace HelpDesk.Model
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<TktUserToken>(entity =>
+            modelBuilder.Entity<UserToken>(entity =>
             {
                 entity.HasKey(e => new { e.Username, e.Token });
 

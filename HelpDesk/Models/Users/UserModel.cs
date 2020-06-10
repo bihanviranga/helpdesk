@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Model
 {
-    public partial class TktUser
+    public partial class UserModel
     {
         public string CompanyId { get; set; }
         public string UserName { get; set; }

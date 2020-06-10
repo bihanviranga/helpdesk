@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Model
 {
-    public partial class TktResTemplate
+    public partial class ResTemplateModel
     {
         public string TemplateId { get; set; }
         public string TemplateName { get; set; }

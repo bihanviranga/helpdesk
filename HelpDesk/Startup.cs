@@ -31,14 +31,18 @@ namespace HelpDesk
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddEntityFrameworkSqlServer();
             // connection DB 
             services.AddDbContextPool<helpdeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
-
             
-
+            //Dependancy Injection
+            services.AddScoped<IUserRepository, UserRepository>();
+            
+            
             services.AddCors();
-
             services.AddControllers();
+
+            //JWT config
 
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
 
@@ -66,26 +70,22 @@ namespace HelpDesk
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Cors Config
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:8080")
+                options.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
+            if (env.IsDevelopment())  { app.UseDeveloperExceptionPage(); }
+            else { app.UseHsts(); }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
