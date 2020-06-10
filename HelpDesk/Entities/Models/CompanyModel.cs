@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HelpDesk.Model
+namespace HelpDesk.Entities.Models
 {
     public partial class CompanyModel
     {

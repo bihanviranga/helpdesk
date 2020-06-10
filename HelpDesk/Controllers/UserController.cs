@@ -1,5 +1,5 @@
-﻿using HelpDesk.Model;
-using HelpDesk.Models.Users;
+﻿using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +13,7 @@ namespace HelpDesk.Controllers
 {
     public class UserController : Controller
     {
-         IUserRepository _User;
+        IUserRepository _User;
 
         public UserController(IUserRepository User)
         {
@@ -22,9 +22,9 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Register")]
-        public JsonResult Register([FromBody]RegistrationModel model)
+        public JsonResult Register([FromBody] RegistrationModel model)
         {
-            
+
             var user = new UserModel
             {
                 UserName = model.UserName,
@@ -38,43 +38,43 @@ namespace HelpDesk.Controllers
                 PasswordHash = model.Password
             };
 
-             //var Result = _User.Add(user);
+            //var Result = _User.Add(user);
 
             // Create Token
-                if ( model.TokenAvailable == null)
+            if (model.TokenAvailable == null)
+            {
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    var tokenDescriptor = new SecurityTokenDescriptor
+                    Subject = new ClaimsIdentity(new Claim[]
                     {
-                        Subject = new ClaimsIdentity(new Claim[]
-                        {
                             new Claim(ClaimTypes.Name, user.CompanyId.ToString())
-                        }),
-                        Expires = DateTime.UtcNow.AddDays(1),   
-                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
-                    };
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
+                };
 
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                    var token = tokenHandler.WriteToken(securityToken);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(securityToken);
 
-                    return Json(token);
-                }
-                else if ( model.TokenAvailable != null)
-                {
-                    return Json("User Registration successful");
-                }
+                return Json(token);
+            }
+            else if (model.TokenAvailable != null)
+            {
+                return Json("User Registration successful");
+            }
 
             return Json("Your Email has Alrady Exist");
         }
 
         [HttpPost]
         [Route("[controller]/Login")]
-        public JsonResult Login([FromBody]LoginModel model) //not working yet
+        public JsonResult Login([FromBody] LoginModel model) //not working yet
         {
             //user existing chechk code here ( not dev yet )
 
 
-            if (1==1) // demo condition ** will change
+            if (1 == 1) // demo condition ** will change
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -92,6 +92,6 @@ namespace HelpDesk.Controllers
             return Json("faild To logIn");
         }
 
-        
+
     }
 }

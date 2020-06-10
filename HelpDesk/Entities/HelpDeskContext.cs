@@ -1,14 +1,14 @@
 ﻿using System;
+using HelpDesk.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace HelpDesk.Model
+namespace HelpDesk.Entities
 {
-    public partial class helpdeskContext : DbContext
+    public partial class HelpDeskContext : DbContext
     {
-      
-        public helpdeskContext(DbContextOptions<helpdeskContext> options) : base(options) { }
 
+        public HelpDeskContext(DbContextOptions<HelpDeskContext> options) : base(options) { }
         public virtual DbSet<ArticleModel> TktArticle { get; set; }
         public virtual DbSet<CategoryModel> TktCategory { get; set; }
         public virtual DbSet<CompanyModel> TktCompany { get; set; }
@@ -22,7 +22,6 @@ namespace HelpDesk.Model
         public virtual DbSet<TicketOperatorModel> TktTicketOperator { get; set; }
         public virtual DbSet<TicketTimelineModel> TktTicketTimeline { get; set; }
         public virtual DbSet<UserModel> TktUser { get; set; }
-        public virtual DbSet<UserToken> TktUserToken { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -373,24 +372,6 @@ namespace HelpDesk.Model
 
                 entity.Property(e => e.Phone)
                     .HasMaxLength(10)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-            });
-
-            modelBuilder.Entity<UserToken>(entity =>
-            {
-                entity.HasKey(e => new { e.Username, e.Token });
-
-                entity.ToTable("Tkt_userToken");
-
-                entity.Property(e => e.Username)
-                    .HasColumnName("username")
-                    .HasMaxLength(36)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Token)
-                    .HasMaxLength(256)
                     .IsUnicode(false)
                     .IsFixedLength();
             });

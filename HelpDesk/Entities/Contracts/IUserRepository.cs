@@ -1,10 +1,10 @@
-﻿using HelpDesk.Model;
+﻿using HelpDesk.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HelpDesk.Models.Users
+namespace HelpDesk.Entities.Contracts
 {
     public interface IUserRepository
     {
