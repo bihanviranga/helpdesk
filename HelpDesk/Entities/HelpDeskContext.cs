@@ -10,19 +10,19 @@ namespace HelpDesk.Entities
 
         public HelpDeskContext(DbContextOptions<HelpDeskContext> options) : base(options) { }
 
-        public virtual DbSet<ArticleModel> TktArticle { get; set; }
-        public virtual DbSet<CategoryModel> TktCategory { get; set; }
-        public virtual DbSet<CompanyModel> TktCompany { get; set; }
-        public virtual DbSet<CompanyBrandModel> TktCompanyBrand { get; set; }
-        public virtual DbSet<ConversationModel> TktConversation { get; set; }
-        public virtual DbSet<ModuleModel> TktModule { get; set; }
-        public virtual DbSet<NotificationModel> TktNotification { get; set; }
-        public virtual DbSet<ProductModel> TktProduct { get; set; }
-        public virtual DbSet<ResTemplateModel> TktResTemplate { get; set; }
-        public virtual DbSet<TicketModel> TktTicketMaster { get; set; }
-        public virtual DbSet<TicketOperatorModel> TktTicketOperator { get; set; }
-        public virtual DbSet<TicketTimelineModel> TktTicketTimeline { get; set; }
-        public virtual DbSet<UserModel> TktUser { get; set; }
+        public virtual DbSet<ArticleModel> ArticleModel { get; set; }
+        public virtual DbSet<CategoryModel> CategoryModel { get; set; }
+        public virtual DbSet<CompanyModel> CompanyModel { get; set; }
+        public virtual DbSet<CompanyBrandModel> CompanyBrandModel { get; set; }
+        public virtual DbSet<ConversationModel> ConversationModel { get; set; }
+        public virtual DbSet<ModuleModel> ModuleModel { get; set; }
+        public virtual DbSet<NotificationModel> NotificationModel { get; set; }
+        public virtual DbSet<ProductModel> ProductModel { get; set; }
+        public virtual DbSet<ResTemplateModel> ResTemplateModel { get; set; }
+        public virtual DbSet<TicketModel> TicketModel { get; set; }
+        public virtual DbSet<TicketOperatorModel> TicketOperatorModel { get; set; }
+        public virtual DbSet<TicketTimelineModel> TicketTimelineModel { get; set; }
+        public virtual DbSet<UserModel> UserModel { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
