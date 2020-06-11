@@ -12,6 +12,7 @@ namespace HelpDesk.Entities.Repository
 
         public void CreateCompany(CompanyModel company)
         {
+            company.CompanyId = Guid.NewGuid().ToString();
             Create(company);
         }
 
@@ -27,10 +28,12 @@ namespace HelpDesk.Entities.Repository
 
         public CompanyModel GetCompanyById(Guid id)
         {
-            var sid = id.ToString();
-            var results = FindByCondition(cmp => cmp.CompanyId.Equals(sid)).FirstOrDefault();
-            return results;
-            // return FindByCondition(cmp => cmp.CompanyId.Equals(id)).FirstOrDefault();
+            // Doesn't work in MSSQL without converting the Guid to a string.
+            // Works that way in MySql though.
+            // (?)
+            // Probably because CompanyModel.CompanyId is defined as string, not Guid.
+            // This happened because of the DB-First approach.
+            return FindByCondition(cmp => cmp.CompanyId.Equals(id.ToString())).FirstOrDefault();
         }
 
         public void UpdateCompany(CompanyModel company)

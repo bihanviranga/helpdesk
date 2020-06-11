@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +13,12 @@ namespace HelpDesk.Controllers
     public class CompanyController : ControllerBase
     {
         private IRepositoryWrapper _repository;
+        private IMapper _mapper;
 
-        public CompanyController(IRepositoryWrapper repository)
+        public CompanyController(IRepositoryWrapper repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -21,8 +26,10 @@ namespace HelpDesk.Controllers
         {
             try
             {
+                // Get the results from repo, and convert (map) them to a DTO.
                 var companies = _repository.Company.GetAllCompanies();
-                return Ok(companies);
+                var companiesResult = _mapper.Map<IEnumerable<CompanyDetailDto>>(companies);
+                return Ok(companiesResult);
             }
             catch (Exception)
             {
@@ -30,9 +37,8 @@ namespace HelpDesk.Controllers
             }
         }
 
-        /*
-         * The NAME parameter in the decorator is needed for CreateCompany method's result.
-         */
+
+        // The NAME parameter in the decorator is needed for CreateCompany method's result.
         [HttpGet("{id}", Name = "CompanyById")]
         public IActionResult GetCompanyById(Guid id)
         {
@@ -45,7 +51,31 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    return Ok(company);
+                    var companyResult = _mapper.Map<CompanyDto>(company);
+                    return Ok(companyResult);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
+        // This endpoint is an example to demonstrate DTOs. We can return different data using different DTOs.
+        [HttpGet("{id}/details")]
+        public IActionResult GetCompanyDetailsById(Guid id)
+        {
+            try
+            {
+                var company = _repository.Company.GetCompanyById(id);
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var companyResult = _mapper.Map<CompanyDetailDto>(company);
+                    return Ok(companyResult);
                 }
             }
             catch (Exception)
@@ -55,7 +85,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCompany([FromBody] CompanyModel company)
+        public IActionResult CreateCompany([FromBody] CompanyCreateDto company)
         {
             try
             {
@@ -69,10 +99,16 @@ namespace HelpDesk.Controllers
                     return BadRequest("Invalid company object");
                 }
 
-                _repository.Company.CreateCompany(company);
+                // convert incoming CompanyCreateDto to actual CompanyModel instance
+                var companyEntity = _mapper.Map<CompanyModel>(company);
+
+                _repository.Company.CreateCompany(companyEntity);
                 _repository.Save();
 
-                return CreatedAtRoute("CompanyById", new { id = company.CompanyId }, company);
+                // convert the model back to a DTO for output
+                var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
+
+                return CreatedAtRoute("CompanyById", new { id = companyEntity.CompanyId }, createdCompany);
             }
             catch (Exception)
             {
@@ -81,7 +117,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCompany(Guid id, [FromBody] CompanyModel company)
+        public IActionResult UpdateCompany(Guid id, [FromBody] CompanyUpdateDto company)
         {
             try
             {
@@ -101,7 +137,11 @@ namespace HelpDesk.Controllers
                     return NotFound();
                 }
 
-                _repository.Company.UpdateCompany(company);
+                // Map changed fields from CompanyUpdateDto to CompanyModel instance
+                _mapper.Map(company, companyEntity);
+
+                // Update and save the changed entity
+                _repository.Company.UpdateCompany(companyEntity);
                 _repository.Save();
 
                 return NoContent();

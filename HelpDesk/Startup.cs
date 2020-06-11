@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using HelpDesk.Entities.Repository;
+using AutoMapper;
 
 namespace HelpDesk
 {
@@ -37,6 +38,8 @@ namespace HelpDesk
             //Dependancy Injection
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
+            // AutoMapper for DTOs
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddCors();
             services.AddControllers();
