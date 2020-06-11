@@ -35,7 +35,7 @@ namespace HelpDesk
             services.AddDbContextPool<HelpDeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
 
             //Dependancy Injection
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
 
             services.AddCors();
