@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
@@ -22,12 +23,12 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllCompanies()
+        public async Task<IActionResult> GetAllCompanies()
         {
             try
             {
                 // Get the results from repo, and convert (map) them to a DTO.
-                var companies = _repository.Company.GetAllCompanies();
+                var companies = await _repository.Company.GetAllCompanies();
                 var companiesResult = _mapper.Map<IEnumerable<CompanyDetailDto>>(companies);
                 return Ok(companiesResult);
             }
@@ -40,11 +41,11 @@ namespace HelpDesk.Controllers
 
         // The NAME parameter in the decorator is needed for CreateCompany method's result.
         [HttpGet("{id}", Name = "CompanyById")]
-        public IActionResult GetCompanyById(Guid id)
+        public async Task<IActionResult> GetCompanyById(Guid id)
         {
             try
             {
-                var company = _repository.Company.GetCompanyById(id);
+                var company = await _repository.Company.GetCompanyById(id);
                 if (company == null)
                 {
                     return NotFound();
@@ -63,11 +64,11 @@ namespace HelpDesk.Controllers
 
         // This endpoint is an example to demonstrate DTOs. We can return different data using different DTOs.
         [HttpGet("{id}/details")]
-        public IActionResult GetCompanyDetailsById(Guid id)
+        public async Task<IActionResult> GetCompanyDetailsById(Guid id)
         {
             try
             {
-                var company = _repository.Company.GetCompanyById(id);
+                var company = await _repository.Company.GetCompanyById(id);
                 if (company == null)
                 {
                     return NotFound();
@@ -85,7 +86,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCompany([FromBody] CompanyCreateDto company)
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyCreateDto company)
         {
             try
             {
@@ -103,7 +104,7 @@ namespace HelpDesk.Controllers
                 var companyEntity = _mapper.Map<CompanyModel>(company);
 
                 _repository.Company.CreateCompany(companyEntity);
-                _repository.Save();
+                await _repository.Save();
 
                 // convert the model back to a DTO for output
                 var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
@@ -117,7 +118,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCompany(Guid id, [FromBody] CompanyUpdateDto company)
+        public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyUpdateDto company)
         {
             try
             {
@@ -131,7 +132,7 @@ namespace HelpDesk.Controllers
                     return BadRequest("Invalid company object");
                 }
 
-                var companyEntity = _repository.Company.GetCompanyById(id);
+                var companyEntity = await _repository.Company.GetCompanyById(id);
                 if (companyEntity == null)
                 {
                     return NotFound();
@@ -142,7 +143,7 @@ namespace HelpDesk.Controllers
 
                 // Update and save the changed entity
                 _repository.Company.UpdateCompany(companyEntity);
-                _repository.Save();
+                await _repository.Save();
 
                 return NoContent();
             }
@@ -153,18 +154,18 @@ namespace HelpDesk.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteCompany(Guid id)
+        public async Task<IActionResult> DeleteCompany(Guid id)
         {
             try
             {
-                var company = _repository.Company.GetCompanyById(id);
+                var company = await _repository.Company.GetCompanyById(id);
                 if (company == null)
                 {
                     return NotFound();
                 }
 
                 _repository.Company.DeleteCompany(company);
-                _repository.Save();
+                await _repository.Save();
 
                 return NoContent();
             }

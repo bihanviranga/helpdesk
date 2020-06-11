@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using HelpDesk.Entities.Contracts;
 
 namespace HelpDesk.Entities.Repository
@@ -24,9 +25,9 @@ namespace HelpDesk.Entities.Repository
             _helpDeskContext = helpDeskContext;
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _helpDeskContext.SaveChanges();
+            await _helpDeskContext.SaveChangesAsync();
         }
     }
 }

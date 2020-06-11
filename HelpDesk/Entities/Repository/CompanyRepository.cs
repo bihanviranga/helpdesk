@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Entities.Repository
 {
@@ -21,19 +23,19 @@ namespace HelpDesk.Entities.Repository
             Delete(company);
         }
 
-        public IEnumerable<CompanyModel> GetAllCompanies()
+        public async Task<IEnumerable<CompanyModel>> GetAllCompanies()
         {
-            return FindAll().OrderBy(cmp => cmp.CompanyName).ToList();
+            return await FindAll().OrderBy(cmp => cmp.CompanyName).ToListAsync();
         }
 
-        public CompanyModel GetCompanyById(Guid id)
+        public async Task<CompanyModel> GetCompanyById(Guid id)
         {
             // Doesn't work in MSSQL without converting the Guid to a string.
             // Works that way in MySql though.
             // (?)
             // Probably because CompanyModel.CompanyId is defined as string, not Guid.
             // This happened because of the DB-First approach.
-            return FindByCondition(cmp => cmp.CompanyId.Equals(id.ToString())).FirstOrDefault();
+            return await FindByCondition(cmp => cmp.CompanyId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
 
         public void UpdateCompany(CompanyModel company)
