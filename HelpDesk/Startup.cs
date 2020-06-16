@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HelpDesk.Model;
-using HelpDesk.Models;
-
-using HelpDesk.Models.Users;
+using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using HelpDesk.Entities.Repository;
+using AutoMapper;
 
 namespace HelpDesk
 {
@@ -32,13 +32,15 @@ namespace HelpDesk
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddEntityFrameworkSqlServer();
-            // connection DB 
-            services.AddDbContextPool<helpdeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
-            
+            // connection DB
+            services.AddDbContextPool<HelpDeskContext>(option => option.UseSqlServer(Configuration.GetConnectionString("HelpDeskConnection")));
+
             //Dependancy Injection
-            services.AddScoped<IUserRepository, UserRepository>();
-            
-            
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+
+            // AutoMapper for DTOs
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddCors();
             services.AddControllers();
 
@@ -65,7 +67,7 @@ namespace HelpDesk
                 };
             });
 
-           
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -78,7 +80,7 @@ namespace HelpDesk
                 .AllowAnyHeader();
             });
 
-            if (env.IsDevelopment())  { app.UseDeveloperExceptionPage(); }
+            if (env.IsDevelopment()) { app.UseDeveloperExceptionPage(); }
             else { app.UseHsts(); }
 
             app.UseHttpsRedirection();
@@ -99,4 +101,3 @@ namespace HelpDesk
         }
     }
 }
-    
