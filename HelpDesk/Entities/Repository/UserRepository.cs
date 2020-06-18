@@ -8,19 +8,14 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : RepositoryBase<UserModel> , IUserRepository
     {
-        private readonly HelpDeskContext context;
-        public UserRepository(HelpDeskContext context)
-        {
-            this.context = context;
-        }
+        public UserRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext) { }
 
-        public UserModel Add(UserModel User)
+        public void CreateUser(UserModel user)
         {
-            context.Add(User);
-            context.SaveChanges();
-            return User;
+            //user.CompanyId = Guid.NewGuid().ToString();
+            Create(user);
         }
     }
 }

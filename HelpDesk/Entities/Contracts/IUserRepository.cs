@@ -8,6 +8,7 @@ namespace HelpDesk.Entities.Contracts
 {
     public interface IUserRepository
     {
-        UserModel Add(UserModel tktUser);
+        //UserModel Add(UserModel tktUser);
+        void CreateUser(UserModel tktUser);
     }
 }

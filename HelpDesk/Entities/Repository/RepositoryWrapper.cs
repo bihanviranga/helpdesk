@@ -7,8 +7,9 @@ namespace HelpDesk.Entities.Repository
     {
         private HelpDeskContext _helpDeskContext;
         private ICompanyRepository _company;
+        private IUserRepository _user;
 
-        public ICompanyRepository Company
+        public ICompanyRepository Company          
         {
             get
             {
@@ -17,6 +18,18 @@ namespace HelpDesk.Entities.Repository
                     _company = new CompanyRepository(_helpDeskContext);
                 }
                 return _company;
+            }
+        }
+
+        public IUserRepository User
+        {
+            get
+            {
+                if (_user == null)
+                {
+                    _user = new UserRepository(_helpDeskContext);
+                }
+                return _user;
             }
         }
 

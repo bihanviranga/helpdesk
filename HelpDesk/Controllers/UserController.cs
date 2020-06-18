@@ -1,4 +1,5 @@
-﻿using HelpDesk.Entities.Contracts;
+﻿using AutoMapper;
+using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -14,41 +15,34 @@ namespace HelpDesk.Controllers
 {
     public class UserController : Controller
     {
-        IUserRepository _User;
-
-        public UserController(IUserRepository User)
+        IRepositoryWrapper _repository;
+        IMapper _mapper;
+        public UserController(IRepositoryWrapper repository , IMapper mapper )
         {
-            this._User = User;
+            this._repository = repository;
+            this._mapper = mapper;
         }
 
         [HttpPost]
         [Route("[controller]/Register")]
-        public JsonResult Register([FromBody] RegistrationModel model)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto user)
         {
 
-            var user = new UserModel
-            {
-                UserName = model.UserName,
-                CompanyId = model.CompanyId,
-                UserType = model.UserType,
-                FullName = model.FullName,
-                Email = model.Email,
-                Phone = model.Phone,
-                UserImage = model.UserImage,
-                UserRole = model.UserRole,
-                PasswordHash = model.Password
-            };
+            // convert incoming DTO to user model
+            var userEntity = _mapper.Map<UserModel>(user);
 
-            //var Result = _User.Add(user);
+            // saving create user and save user into DB
+            _repository.User.CreateUser(userEntity);
+            await _repository.Save();
 
             // Create Token
-            if (model.TokenAvailable == null)
+            if (user.TokenAvailable == null)
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                            new Claim(ClaimTypes.Name, user.CompanyId.ToString())
+                        new Claim(ClaimTypes.Name, user.CompanyId.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
@@ -60,7 +54,7 @@ namespace HelpDesk.Controllers
 
                 return Json(token);
             }
-            else if (model.TokenAvailable != null)
+            else if (user.TokenAvailable != null)
             {
                 return Json("User Registration successful");
             }
@@ -70,7 +64,7 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Login")]
-        public JsonResult Login([FromBody] LoginModel model) //not working yet
+        public IActionResult Login([FromBody] UserLoginDto model) //not working yet
         {
             //user existing chechk code here ( not dev yet )
 
