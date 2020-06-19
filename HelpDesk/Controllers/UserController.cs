@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HelpDesk.Entities;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
@@ -17,10 +18,11 @@ namespace HelpDesk.Controllers
     {
         IRepositoryWrapper _repository;
         IMapper _mapper;
-        public UserController(IRepositoryWrapper repository , IMapper mapper )
+        public UserController(IRepositoryWrapper repository , IMapper mapper)
         {
             this._repository = repository;
             this._mapper = mapper;
+            
         }
 
         [HttpPost]
@@ -87,6 +89,52 @@ namespace HelpDesk.Controllers
             return Json("faild To logIn");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _repository.User.GetAllUsers();
+                return Ok(users);
+            }
+            catch(Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
 
+        }
+
+        [HttpGet]
+        [Route("[controller]/{id}")]
+        public async Task<IActionResult> GetUser(String id)
+        {
+            try
+            {
+                var user = await _repository.User.GetUserById(id);
+                return Ok(user);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+
+        }
+
+        [HttpDelete]
+        [Route("[controller]/{id}")]
+        public async Task<IActionResult> DeleteUser(String id)
+        {
+            var user = await _repository.User.GetUserById(id);
+            if(user == null)
+            {
+                return StatusCode(500, "User Not Found");
+            }
+            else
+            {
+                _repository.User.Delete(user);
+                await _repository.Save();
+                return Json("User Remove Successfully");
+            }
+        }
     }
 }

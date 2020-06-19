@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.Contracts
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase<UserModel>
     {
-        //UserModel Add(UserModel tktUser);
+        Task<IEnumerable<UserModel>> GetAllUsers();
+        Task<UserModel> GetUserById(String id);
         void CreateUser(UserModel tktUser);
+        void DeleteUser(UserModel user);
     }
 }
