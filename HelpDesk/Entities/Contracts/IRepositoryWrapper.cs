@@ -6,6 +6,8 @@ namespace HelpDesk.Entities.Contracts
     {
         ICompanyRepository Company { get; }
         IUserRepository User { get;  }
+
+        IArticleRepository Article { get; }
         Task Save();
     }
 }

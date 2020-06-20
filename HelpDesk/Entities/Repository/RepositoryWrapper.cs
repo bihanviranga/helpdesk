@@ -8,8 +8,9 @@ namespace HelpDesk.Entities.Repository
         private HelpDeskContext _helpDeskContext;
         private ICompanyRepository _company;
         private IUserRepository _user;
+        private IArticleRepository _article;
 
-        public ICompanyRepository Company          
+        public ICompanyRepository Company
         {
             get
             {
@@ -30,6 +31,18 @@ namespace HelpDesk.Entities.Repository
                     _user = new UserRepository(_helpDeskContext);
                 }
                 return _user;
+            }
+        }
+
+        public IArticleRepository Article 
+        {
+            get
+            {
+                if (_article == null)
+                {
+                    _article = new ArticleRepository(_helpDeskContext);
+                }
+                return _article;
             }
         }
 

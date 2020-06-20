@@ -9,7 +9,7 @@ namespace HelpDesk.Entities.Contracts
     public interface IUserRepository : IRepositoryBase<UserModel>
     {
         Task<IEnumerable<UserModel>> GetAllUsers();
-        Task<UserModel> GetUserById(String id);
+        Task<UserModel> GetUserByUserName(Guid userName);
         void CreateUser(UserModel tktUser);
         void DeleteUser(UserModel user);
     }
