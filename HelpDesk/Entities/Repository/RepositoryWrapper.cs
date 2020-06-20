@@ -12,6 +12,8 @@ namespace HelpDesk.Entities.Repository
         private IProductRepository _product;
         private IModuleRepository _module;
         private ICategoryRepository _category;
+        private IResTemplateRepository _resTemplate;
+
 
         public ICompanyRepository Company
         {
@@ -37,7 +39,7 @@ namespace HelpDesk.Entities.Repository
             }
         }
 
-        public IArticleRepository Article 
+        public IArticleRepository Article
         {
             get
             {
@@ -83,7 +85,19 @@ namespace HelpDesk.Entities.Repository
                 }
                 return _category;
             }
-        } 
+        }
+
+        public IResTemplateRepository ResTemplate
+        {
+            get
+            {
+                if (_resTemplate == null)
+                {
+                    _resTemplate = new ResTemplateRepository(_helpDeskContext);
+                }
+                return _resTemplate;
+            }
+        }
 
         public RepositoryWrapper(HelpDeskContext helpDeskContext)
         {
