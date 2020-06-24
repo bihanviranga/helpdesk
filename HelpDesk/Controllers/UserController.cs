@@ -16,8 +16,8 @@ namespace HelpDesk.Controllers
 {
     public class UserController : Controller
     {
-        IRepositoryWrapper _repository;
-        IMapper _mapper;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
         public UserController(IRepositoryWrapper repository , IMapper mapper)
         {
             this._repository = repository;

@@ -8,6 +8,10 @@ namespace HelpDesk.Entities.Contracts
         IUserRepository User { get;  }
 
         IArticleRepository Article { get; }
+        IProductRepository Product { get; }
+
+        IModuleRepository Module { get; }
+        ICategoryRepository Category { get; }
         Task Save();
     }
 }

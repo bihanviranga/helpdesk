@@ -5,10 +5,13 @@ namespace HelpDesk.Entities.Repository
 {
     public class RepositoryWrapper : IRepositoryWrapper
     {
-        private HelpDeskContext _helpDeskContext;
+        private readonly HelpDeskContext _helpDeskContext;
         private ICompanyRepository _company;
         private IUserRepository _user;
         private IArticleRepository _article;
+        private IProductRepository _product;
+        private IModuleRepository _module;
+        private ICategoryRepository _category;
 
         public ICompanyRepository Company
         {
@@ -45,6 +48,42 @@ namespace HelpDesk.Entities.Repository
                 return _article;
             }
         }
+
+        public IProductRepository Product
+        {
+            get
+            {
+                if (_product == null)
+                {
+                    _product = new ProductRepository(_helpDeskContext);
+                }
+                return _product;
+            }
+        }
+
+        public IModuleRepository Module
+        {
+            get
+            {
+                if (_module == null)
+                {
+                    _module = new ModuleRepository(_helpDeskContext);
+                }
+                return _module;
+            }
+        }
+
+        public ICategoryRepository Category
+        {
+            get
+            {
+                if (_category == null)
+                {
+                    _category = new CategoryRepository(_helpDeskContext);
+                }
+                return _category;
+            }
+        } 
 
         public RepositoryWrapper(HelpDeskContext helpDeskContext)
         {
