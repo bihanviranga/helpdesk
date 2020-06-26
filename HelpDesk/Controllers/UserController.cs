@@ -16,8 +16,8 @@ namespace HelpDesk.Controllers
 {
     public class UserController : Controller
     {
-        IRepositoryWrapper _repository;
-        IMapper _mapper;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
         public UserController(IRepositoryWrapper repository , IMapper mapper)
         {
             this._repository = repository;
@@ -106,11 +106,11 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetUser(String id)
+        public async Task<IActionResult> GetUser(Guid userName)
         {
             try
             {
-                var user = await _repository.User.GetUserById(id);
+                var user = await _repository.User.GetUserByUserName(userName);
                 return Ok(user);
             }
             catch (Exception)
@@ -122,9 +122,9 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteUser(String id)
+        public async Task<IActionResult> DeleteUser(Guid userName)
         {
-            var user = await _repository.User.GetUserById(id);
+            var user = await _repository.User.GetUserByUserName(userName);
             if(user == null)
             {
                 return StatusCode(500, "User Not Found");

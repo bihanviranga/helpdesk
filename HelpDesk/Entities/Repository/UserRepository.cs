@@ -15,7 +15,7 @@ namespace HelpDesk.Entities.Repository
 
         public void CreateUser(UserModel user)
         {
-            //user.CompanyId = Guid.NewGuid().ToString();
+            user.UserName = Guid.NewGuid().ToString();
             Create(user);
         }
 
@@ -29,9 +29,9 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
         }
 
-        public async Task<UserModel> GetUserById(String id)
+        public async Task<UserModel> GetUserByUserName(Guid userName)
         {
-            return await FindByCondition(cmp => cmp.CompanyId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(cmp => cmp.UserName.Equals(userName.ToString())).FirstOrDefaultAsync();
         }
     }
 }

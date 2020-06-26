@@ -13,8 +13,8 @@ namespace HelpDesk.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private IRepositoryWrapper _repository;
-        private IMapper _mapper;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
 
         public CompanyController(IRepositoryWrapper repository, IMapper mapper)
         {
