@@ -7,7 +7,7 @@ namespace HelpDesk.Entities.Contracts
 {
     public interface INotificationRepository : IRepositoryBase<NotificationModel>
     {
-        Task<IEnumerable<NotificationModel>> GetNotificationsForUser(Guid userId);
+        Task<IEnumerable<NotificationModel>> GetNotificationsForUser(string userId);
         Task<NotificationModel> GetNotificationById(Guid id);
         void CreateNotification(NotificationModel notification);
         void UpdateNotification(NotificationModel notification);

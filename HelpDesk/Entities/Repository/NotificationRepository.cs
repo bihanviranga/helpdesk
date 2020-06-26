@@ -27,9 +27,9 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(notif => notif.NotifId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<NotificationModel>> GetNotificationsForUser(Guid userId)
+        public async Task<IEnumerable<NotificationModel>> GetNotificationsForUser(string userId)
         {
-            return await FindByCondition(notif => notif.NotifUrl.Equals(userId.ToString())).ToListAsync();
+            return await FindByCondition(notif => notif.NotifUser.Equals(userId)).ToListAsync();
         }
 
         public void UpdateNotification(NotificationModel notification)

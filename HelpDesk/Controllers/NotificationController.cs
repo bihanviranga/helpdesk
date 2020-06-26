@@ -22,7 +22,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetNotificationsForUser(Guid userId)
+        public async Task<IActionResult> GetNotificationsForUser(string userId)
         {
             try
             {
