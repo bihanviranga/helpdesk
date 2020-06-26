@@ -13,6 +13,7 @@ namespace HelpDesk.Entities.Repository
         private IModuleRepository _module;
         private ICategoryRepository _category;
         private IResTemplateRepository _resTemplate;
+        private INotificationRepository _notification;
 
 
         public ICompanyRepository Company
@@ -96,6 +97,18 @@ namespace HelpDesk.Entities.Repository
                     _resTemplate = new ResTemplateRepository(_helpDeskContext);
                 }
                 return _resTemplate;
+            }
+        }
+
+        public INotificationRepository Notification
+        {
+            get
+            {
+                if (_notification == null)
+                {
+                    _notification = new NotificationRepository(_helpDeskContext);
+                }
+                return _notification;
             }
         }
 

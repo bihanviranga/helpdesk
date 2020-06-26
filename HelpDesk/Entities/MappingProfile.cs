@@ -18,6 +18,9 @@ namespace HelpDesk.Entities
 
             CreateMap<ResTemplateModel, ResTemplateDto>();
             CreateMap<ResTemplateCreateDto, ResTemplateModel>();
+
+            CreateMap<NotificationModel, NotificationDto>();
+            CreateMap<NotificationMarkDto, NotificationModel>();
         }
     }
 }

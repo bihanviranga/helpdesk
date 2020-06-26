@@ -11,6 +11,7 @@ namespace HelpDesk.Entities.Contracts
         IModuleRepository Module { get; }
         ICategoryRepository Category { get; }
         IResTemplateRepository ResTemplate { get; }
+        INotificationRepository Notification { get; }
 
         Task Save();
     }
