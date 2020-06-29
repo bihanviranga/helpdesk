@@ -13,6 +13,7 @@ namespace HelpDesk.Entities.Contracts
         IResTemplateRepository ResTemplate { get; }
         INotificationRepository Notification { get; }
         ITicketOperatorRepository TicketOperator { get; }
+        ITicketTimelineRepository TicketTimeline { get; }
 
         Task Save();
     }

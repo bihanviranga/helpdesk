@@ -23,6 +23,8 @@ namespace HelpDesk.Entities
             CreateMap<NotificationMarkDto, NotificationModel>();
 
             CreateMap<TicketOperatorModel, TicketOperatorDto>();
+
+            CreateMap<TicketTimelineModel, TicketTimelineDto>();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace HelpDesk.Entities.Repository
         private IResTemplateRepository _resTemplate;
         private INotificationRepository _notification;
         private ITicketOperatorRepository _ticketOperator;
-
+        private ITicketTimelineRepository _ticketTimeline;
 
         public ICompanyRepository Company
         {
@@ -122,6 +122,18 @@ namespace HelpDesk.Entities.Repository
                     _ticketOperator = new TicketOperatorRepository(_helpDeskContext);
                 }
                 return _ticketOperator;
+            }
+        }
+
+        public ITicketTimelineRepository TicketTimeline
+        {
+            get
+            {
+                if (_ticketTimeline == null)
+                {
+                    _ticketTimeline = new TicketTimelineRepository(_helpDeskContext);
+                }
+                return _ticketTimeline;
             }
         }
 
