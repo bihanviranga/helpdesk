@@ -13,6 +13,7 @@ namespace HelpDesk.Entities.Repository
         public TicketRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext) { }
         public void CreateTicket(TicketModel ticket)
         {
+            ticket.TicketId = Guid.NewGuid().ToString();
             Create(ticket);
         }
 
