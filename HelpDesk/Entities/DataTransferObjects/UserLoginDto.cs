@@ -9,7 +9,7 @@ namespace HelpDesk.Entities.DataTransferObjects
     public class UserLoginDto
     {
         [Required]
-        public String UserNameOrEmail { get; set; }
+        public string UserNameOrEmail{ get; set; }
 
         [Required]
         [DataType(DataType.Password)]

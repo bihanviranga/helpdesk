@@ -30,21 +30,40 @@ namespace HelpDesk.Controllers
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto user)
         {
 
-            // convert incoming DTO to user model
-            var userEntity = _mapper.Map<UserModel>(user);
+            try
+            {
+                // convert incoming DTO to user model
+                var userEntity = _mapper.Map<UserModel>(user);
 
-            // saving create user and save user into DB
-            _repository.User.CreateUser(userEntity);
-            await _repository.Save();
+                // saving create user and save user into DB
+                _repository.User.CreateUser(userEntity);
+                await _repository.Save();
 
-            // Create Token
-            if (user.TokenAvailable == null)
+                return Json("User Register Done");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went worng");
+            }
+
+        }
+
+        [HttpPost]
+        [Route("[controller]/Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto model) //not working yet
+        {
+            //user existing chechk code here ( not dev yet )
+
+            var result = await _repository.User.LoginUser(model);
+
+
+            if (result != null) // demo condition ** will change
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, user.CompanyId.ToString())
+                        new Claim(ClaimTypes.Name, result.UserName.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
@@ -54,39 +73,24 @@ namespace HelpDesk.Controllers
                 var securityToken = tokenHandler.CreateToken(tokenDescriptor);
                 var token = tokenHandler.WriteToken(securityToken);
 
-                return Json(token);
-            }
-            else if (user.TokenAvailable != null)
-            {
-                return Json("User Registration successful");
-            }
-
-            return Json("Your Email has Alrady Exist");
-        }
-
-        [HttpPost]
-        [Route("[controller]/Login")]
-        public IActionResult Login([FromBody] UserLoginDto model) //not working yet
-        {
-            //user existing chechk code here ( not dev yet )
-
-
-            if (1 == 1) // demo condition ** will change
-            {
-                var tokenDescriptor = new SecurityTokenDescriptor
+                //shoud do with mapping
+                var loggedUser = new LoggedUserDto
                 {
-                    // save to token in DB
-
-                    Expires = DateTime.UtcNow.AddDays(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
+                    Email = result.Email,
+                    CompanyId = result.CompanyId,
+                    UserName = result.UserName,
+                    UserType = result.UserType,
+                    FullName = result.FullName,
+                    Phone = result.Phone,
+                    UserImage = result.UserImage,
+                    UserRole = result.UserRole,
+                    Token = token
                 };
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                var token = tokenHandler.WriteToken(securityToken);
-                return Json(token);
+                return Json(loggedUser);
             }
-            return Json("faild To logIn");
+
+            return StatusCode(500, "User Not Found");
         }
 
         [HttpGet]

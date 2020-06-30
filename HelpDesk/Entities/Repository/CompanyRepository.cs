@@ -7,7 +7,7 @@ using HelpDesk.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Entities.Repository
-{
+{   
     public class CompanyRepository : RepositoryBase<CompanyModel>, ICompanyRepository
     {
         public CompanyRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext) { }

@@ -19,7 +19,7 @@ namespace HelpDesk.Entities.DataTransferObjects
         public String UserImage { get; set; }
 
         [DataType(DataType.Password)]
-        public String Password { get; set; }
+        public String PasswordHash { get; set; }
         [Required]
         [DataType(DataType.Password)]
         [Compare("Password")]

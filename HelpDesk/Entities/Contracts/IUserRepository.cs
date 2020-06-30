@@ -1,4 +1,5 @@
-﻿using HelpDesk.Entities.Models;
+﻿using HelpDesk.Entities.DataTransferObjects;
+using HelpDesk.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<UserModel>> GetAllUsers();
         Task<UserModel> GetUserByUserName(Guid userName);
+        Task<UserModel> LoginUser(UserLoginDto userLoginDto);
         void CreateUser(UserModel tktUser);
         void DeleteUser(UserModel user);
     }
