@@ -12,6 +12,10 @@ namespace HelpDesk.Entities.Repository
         private IProductRepository _product;
         private IModuleRepository _module;
         private ICategoryRepository _category;
+        private IResTemplateRepository _resTemplate;
+        private INotificationRepository _notification;
+        private ITicketOperatorRepository _ticketOperator;
+        private ITicketTimelineRepository _ticketTimeline;
 
         public ICompanyRepository Company
         {
@@ -37,7 +41,7 @@ namespace HelpDesk.Entities.Repository
             }
         }
 
-        public IArticleRepository Article 
+        public IArticleRepository Article
         {
             get
             {
@@ -83,7 +87,55 @@ namespace HelpDesk.Entities.Repository
                 }
                 return _category;
             }
-        } 
+        }
+
+        public IResTemplateRepository ResTemplate
+        {
+            get
+            {
+                if (_resTemplate == null)
+                {
+                    _resTemplate = new ResTemplateRepository(_helpDeskContext);
+                }
+                return _resTemplate;
+            }
+        }
+
+        public INotificationRepository Notification
+        {
+            get
+            {
+                if (_notification == null)
+                {
+                    _notification = new NotificationRepository(_helpDeskContext);
+                }
+                return _notification;
+            }
+        }
+
+        public ITicketOperatorRepository TicketOperator
+        {
+            get
+            {
+                if (_ticketOperator == null)
+                {
+                    _ticketOperator = new TicketOperatorRepository(_helpDeskContext);
+                }
+                return _ticketOperator;
+            }
+        }
+
+        public ITicketTimelineRepository TicketTimeline
+        {
+            get
+            {
+                if (_ticketTimeline == null)
+                {
+                    _ticketTimeline = new TicketTimelineRepository(_helpDeskContext);
+                }
+                return _ticketTimeline;
+            }
+        }
 
         public RepositoryWrapper(HelpDeskContext helpDeskContext)
         {

@@ -219,9 +219,7 @@ namespace HelpDesk.Entities
 
                 entity.ToTable("Tkt_ResTemplate");
 
-                entity.Property(e => e.TemplateId)
-                    .HasColumnName("TemplateID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
 
                 entity.Property(e => e.TemplateAddedBy)
                     .IsRequired()
