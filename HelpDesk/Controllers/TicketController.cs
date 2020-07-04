@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects.Ticket;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -57,24 +58,19 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTicket([FromBody]TicketModel ticket)
+        public async Task<IActionResult> CreateTicket([FromBody]CreateTicketDto CreateTicket)
         {
             try
             {
-                if (ticket == null)
+                if (CreateTicket == null)
                 {
-                    return BadRequest("Company object is null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Invalid company object");
+                    return BadRequest("Ticket object is null");
                 }
 
                 // convert incoming CompanyCreateDto to actual CompanyModel instance
-                // var companyEntity = _mapper.Map<CompanyModel>(company);
+                var creatTicketEntity = _mapper.Map<TicketModel>(CreateTicket);
 
-                _repository.Ticket.CreateTicket(ticket);
+                _repository.Ticket.CreateTicket(creatTicketEntity);
                 await _repository.Save();
 
                 // convert the model back to a DTO for output

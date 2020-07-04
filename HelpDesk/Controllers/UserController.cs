@@ -3,11 +3,13 @@ using HelpDesk.Entities;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,13 +29,15 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Register")]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationDto user)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto newUser)
         {
 
+            
             try
             {
                 // convert incoming DTO to user model
-                var userEntity = _mapper.Map<UserModel>(user);
+                var userEntity = _mapper.Map<UserModel>(newUser);
+                userEntity.PasswordHash = newUser.Password;
 
                 // saving create user and save user into DB
                 _repository.User.CreateUser(userEntity);
@@ -55,7 +59,7 @@ namespace HelpDesk.Controllers
             //user existing chechk code here ( not dev yet )
 
             var result = await _repository.User.LoginUser(model);
-
+                
 
             if (result != null) // demo condition ** will change
             {
@@ -63,7 +67,9 @@ namespace HelpDesk.Controllers
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, result.UserName.ToString())
+                        new Claim("UserName", result.UserName.ToString()),
+                        new Claim("UserRole", result.UserRole.ToString()),
+                        new Claim("UserType", result.UserType.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha256Signature)
@@ -73,24 +79,34 @@ namespace HelpDesk.Controllers
                 var securityToken = tokenHandler.CreateToken(tokenDescriptor);
                 var token = tokenHandler.WriteToken(securityToken);
 
-                //shoud do with mapping
-                var loggedUser = new LoggedUserDto
-                {
-                    Email = result.Email,
-                    CompanyId = result.CompanyId,
-                    UserName = result.UserName,
-                    UserType = result.UserType,
-                    FullName = result.FullName,
-                    Phone = result.Phone,
-                    UserImage = result.UserImage,
-                    UserRole = result.UserRole,
-                    Token = token
-                };
-
-                return Json(loggedUser);
+                return Json(token);
             }
 
             return StatusCode(500, "User Not Found");
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("[controller]/GetProfile")]
+        public async Task<JsonResult> GetProfile()
+        {
+            String userName = User.Claims.First(c => c.Type == "UserName").Value;
+            
+            var result = await _repository.User.GetUserByUserName(new Guid(userName));
+
+            var loggedUser = new ProfileDto
+            {
+                Email = result.Email,
+                CompanyId = result.CompanyId,
+                UserName = result.UserName,
+                UserType = result.UserType,
+                FullName = result.FullName,
+                Phone = result.Phone,
+                UserImage = result.UserImage,
+                UserRole = result.UserRole
+            };
+
+            return Json(result);
         }
 
         [HttpGet]
@@ -110,7 +126,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetUser(Guid userName)
+        public async Task<IActionResult> GetUserByUserName(Guid userName)
         {
             try
             {

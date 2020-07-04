@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.DataTransferObjects
 {
-    public class LoggedUserDto
+    public class ProfileDto
     {
         public string CompanyId { get; set; }
         public string UserName { get; set; }
@@ -15,6 +15,5 @@ namespace HelpDesk.Entities.DataTransferObjects
         public string Phone { get; set; }
         public string UserImage { get; set; }
         public string UserRole { get; set; }
-        public string Token { get; set; }
     }
 }
