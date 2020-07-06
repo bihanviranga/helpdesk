@@ -14,5 +14,6 @@ namespace HelpDesk.Entities.Contracts
         Task<UserModel> LoginUser(UserLoginDto userLoginDto);
         void CreateUser(UserModel tktUser);
         void DeleteUser(UserModel user);
+        void UpdateUser(UserModel user);
     }
 }

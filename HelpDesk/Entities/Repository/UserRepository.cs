@@ -25,6 +25,11 @@ namespace HelpDesk.Entities.Repository
             Delete(user);
         }
 
+        public void UpdateUser(UserModel user)
+        {
+            Update(user);
+        }
+
         public async Task<IEnumerable<UserModel>> GetAllUsers()
         {
             return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();

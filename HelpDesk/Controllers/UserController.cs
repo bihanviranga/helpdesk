@@ -43,7 +43,9 @@ namespace HelpDesk.Controllers
                 _repository.User.CreateUser(userEntity);
                 await _repository.Save();
 
-                return Json("User Register Done");
+                var registredUser = _mapper.Map<UserDto>(userEntity);
+
+                return Ok(registredUser);
             }
             catch (Exception)
             {
@@ -86,30 +88,6 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [Route("[controller]/GetProfile")]
-        public async Task<JsonResult> GetProfile()
-        {
-            String userName = User.Claims.First(c => c.Type == "UserName").Value;
-            
-            var result = await _repository.User.GetUserByUserName(new Guid(userName));
-
-            var loggedUser = new ProfileDto
-            {
-                Email = result.Email,
-                CompanyId = result.CompanyId,
-                UserName = result.UserName,
-                UserType = result.UserType,
-                FullName = result.FullName,
-                Phone = result.Phone,
-                UserImage = result.UserImage,
-                UserRole = result.UserRole
-            };
-
-            return Json(result);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -125,12 +103,13 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetUserByUserName(Guid userName)
+        [Route("[controller]/{userName}")]
+        public async Task<IActionResult> GetUserByUserName(string userName)
         {
             try
             {
-                var user = await _repository.User.GetUserByUserName(userName);
+
+                var user = await _repository.User.GetUserByUserName(new Guid(userName));
                 return Ok(user);
             }
             catch (Exception)
@@ -141,19 +120,20 @@ namespace HelpDesk.Controllers
         }
 
         [HttpDelete]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteUser(Guid userName)
+        [Route("[controller]/{userName}")]
+        public async Task<IActionResult> DeleteUser(string userName)
         {
-            var user = await _repository.User.GetUserByUserName(userName);
+            var user = await _repository.User.GetUserByUserName(new Guid(userName));
             if(user == null)
             {
                 return StatusCode(500, "User Not Found");
             }
             else
             {
+                var deletedUser = _mapper.Map<UserDto>(user);
                 _repository.User.Delete(user);
                 await _repository.Save();
-                return Json("User Remove Successfully");
+                return Ok(deletedUser);
             }
         }
     }

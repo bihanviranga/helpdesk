@@ -34,7 +34,7 @@ namespace HelpDesk.Entities.Repository
 
         public void UpdateTicket(TicketModel ticket)
         {
-            throw new NotImplementedException();
+            Update(ticket);
         }
     }
 }

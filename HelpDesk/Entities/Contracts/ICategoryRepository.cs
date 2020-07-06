@@ -12,5 +12,6 @@ namespace HelpDesk.Entities.Contracts
         Task<CategoryModel> GetCategoryById(String id);
         void CreateCategory(CategoryModel category);
         void DeleteCategory(CategoryModel category);
+        void UpdateCategory(CategoryModel category);
     }
 }

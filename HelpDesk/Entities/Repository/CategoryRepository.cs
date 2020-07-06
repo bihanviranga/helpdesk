@@ -20,6 +20,10 @@ namespace HelpDesk.Entities.Repository
         {
             Delete(category);
         }
+        public void UpdateCategory(CategoryModel category)
+        {
+            Update(category);
+        }
 
         public async Task<IEnumerable<CategoryModel>> GetAllCategories()
         {

@@ -16,6 +16,7 @@ namespace HelpDesk.Entities
             CreateMap<CompanyUpdateDto, CompanyModel>();
 
             CreateMap<UserRegistrationDto, UserModel>();
+            CreateMap<UserModel, UserDto>();
 
             CreateMap<ResTemplateModel, ResTemplateDto>();
             CreateMap<ResTemplateCreateDto, ResTemplateModel>();

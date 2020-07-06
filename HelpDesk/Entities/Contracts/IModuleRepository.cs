@@ -12,5 +12,6 @@ namespace HelpDesk.Entities.Contracts
         Task<ModuleModel> GetModuleById(String id);
         void CreateModule(ModuleModel module);
         void DeleteModule(ModuleModel module);
+        void UpdateModule(ModuleModel module);
     }
 }
