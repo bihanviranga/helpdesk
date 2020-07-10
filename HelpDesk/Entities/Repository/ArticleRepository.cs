@@ -30,5 +30,10 @@ namespace HelpDesk.Entities.Repository
         {
             return await FindByCondition(art => art.ArticleId.Equals(articleId.ToString())).FirstOrDefaultAsync();
         }
+
+        public void UpdateArticle(ArticleModel article)
+        {
+            Update(article);
+        }
     }
 }

@@ -64,11 +64,11 @@ namespace HelpDesk.Controllers
 
         // This endpoint is an example to demonstrate DTOs. We can return different data using different DTOs.
         [HttpGet("{id}/details")]
-        public async Task<IActionResult> GetCompanyDetailsById(Guid id)
+        public async Task<IActionResult> GetCompanyDetailsById(string id)
         {
             try
             {
-                var company = await _repository.Company.GetCompanyById(id);
+                var company = await _repository.Company.GetCompanyById(new Guid(id));
                 if (company == null)
                 {
                     return NotFound();
@@ -154,11 +154,11 @@ namespace HelpDesk.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany(Guid id)
+        public async Task<IActionResult> DeleteCompany(string id)
         {
             try
             {
-                var company = await _repository.Company.GetCompanyById(id);
+                var company = await _repository.Company.GetCompanyById(new Guid(id));
                 if (company == null)
                 {
                     return NotFound();
@@ -167,7 +167,9 @@ namespace HelpDesk.Controllers
                 _repository.Company.DeleteCompany(company);
                 await _repository.Save();
 
-                return NoContent();
+                var companyResult = _mapper.Map<CompanyDetailDto>(company);
+                return Ok(companyResult);
+
             }
             catch (Exception)
             {

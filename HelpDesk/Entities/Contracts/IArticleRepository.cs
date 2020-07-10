@@ -12,5 +12,6 @@ namespace HelpDesk.Entities.Contracts
         Task<ArticleModel> GetArticleById(String articleId);
         void CreateArticle(ArticleModel article);
         void DeleteArticle(ArticleModel article);
+        void UpdateArticle(ArticleModel article);
     }
 }

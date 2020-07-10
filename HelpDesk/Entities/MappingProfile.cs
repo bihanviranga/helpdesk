@@ -1,6 +1,7 @@
 using AutoMapper;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.DataTransferObjects.ResTemplate;
+using HelpDesk.Entities.DataTransferObjects.Ticket;
 using HelpDesk.Entities.Models;
 
 namespace HelpDesk.Entities
@@ -15,6 +16,7 @@ namespace HelpDesk.Entities
             CreateMap<CompanyUpdateDto, CompanyModel>();
 
             CreateMap<UserRegistrationDto, UserModel>();
+            CreateMap<UserModel, UserDto>();
 
             CreateMap<ResTemplateModel, ResTemplateDto>();
             CreateMap<ResTemplateCreateDto, ResTemplateModel>();
@@ -25,6 +27,8 @@ namespace HelpDesk.Entities
             CreateMap<TicketOperatorModel, TicketOperatorDto>();
 
             CreateMap<TicketTimelineModel, TicketTimelineDto>();
+
+            CreateMap<CreateTicketDto ,TicketModel>();
         }
     }
 }

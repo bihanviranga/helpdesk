@@ -30,6 +30,11 @@ namespace HelpDesk.Entities.Repository
         {
             return await FindByCondition(m => m.ModuleId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
+
+        public void UpdateModule(ModuleModel module)
+        {
+            Update(module);
+        }
     }
 }
 

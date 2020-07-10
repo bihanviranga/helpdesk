@@ -14,6 +14,7 @@ namespace HelpDesk.Entities.Contracts
         INotificationRepository Notification { get; }
         ITicketOperatorRepository TicketOperator { get; }
         ITicketTimelineRepository TicketTimeline { get; }
+        ITicketRepository Ticket { get; }
 
         Task Save();
     }
