@@ -12,6 +12,7 @@ namespace HelpDesk.Entities.Contracts
         Task<IEnumerable<UserModel>> GetAllUsers();
         Task<UserModel> GetUserByUserName(Guid userName);
         Task<UserModel> LoginUser(UserLoginDto userLoginDto);
+        Task<IEnumerable<UserModel>> GetUsersByCondition(string userType , string userCompanyId);
         void CreateUser(UserModel tktUser);
         void DeleteUser(UserModel user);
         void UpdateUser(UserModel user);

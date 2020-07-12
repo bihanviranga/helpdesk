@@ -71,6 +71,8 @@ namespace HelpDesk.Controllers
                     {
                         new Claim("UserName", result.UserName.ToString()),
                         new Claim("UserRole", result.UserRole.ToString()),
+                        new Claim("CompanyId", result.CompanyId.ToString()),
+                        new Claim("Email", result.Email.ToString()),
                         new Claim("UserType", result.UserType.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
@@ -88,12 +90,27 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        [Authorize]
+        public async Task<IActionResult> GetUsers()
         {
             try
             {
-                var users = await _repository.User.GetAllUsers();
-                return Ok(users);
+                var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+                
+               if(userRole == "Manager")
+                {
+                    var users = await _repository.User.GetUsersByCondition(userType , userCompanyId);
+                    ///var usersDto = _mapper.Map<UserDto>(users);
+                    return Ok(users);
+                }else if (userRole == "User")
+                {
+                    return StatusCode(401, "401 Unauthorized  Access");
+                }
+
+                return StatusCode(500, "Something went wrong");
+               
             }
             catch(Exception)
             {

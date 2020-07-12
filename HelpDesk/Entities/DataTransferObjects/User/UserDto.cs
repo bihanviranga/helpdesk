@@ -8,6 +8,7 @@ namespace HelpDesk.Entities.DataTransferObjects
     public class UserDto
     {
         public string CompanyId { get; set; }
+        public string CompanyName { get; set; }
         public string UserName { get; set; }
         public string UserType { get; set; }
         public string FullName { get; set; }
