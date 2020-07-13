@@ -67,6 +67,31 @@ namespace HelpDesk.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("[controller]/GetModulesByCompanyId/{id}")]
+        public async Task<IActionResult> GetModulesByCompanyId(String id)
+        {
+            try
+            {
+                var modules = await _repository.Module.GetModulesByCompanyId(id);
+
+                if (modules == null)
+                {
+                    return StatusCode(404, "Not Found");
+                }
+                else
+                {
+                    //mappers not use -> ** should dev in future
+                    //var productResult = _mapper.Map<ProductDto>(product);
+                    return Ok(modules);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
 
 
         [HttpDelete]

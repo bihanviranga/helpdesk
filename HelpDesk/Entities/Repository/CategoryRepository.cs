@@ -34,6 +34,11 @@ namespace HelpDesk.Entities.Repository
         {
             return await FindByCondition(c => c.CategoryId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
+
+        public async Task<IEnumerable<CategoryModel>> GetCategoriesByCompanyId(string id)
+        {
+            return await FindByCondition(c => c.CompanyId.Equals(id.ToString())).ToListAsync();
+        }
     }
 }
 
