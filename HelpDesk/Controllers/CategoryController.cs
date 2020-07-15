@@ -35,7 +35,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/GetCategoriesByCompanyId/{id}")]
+        [Route("[controller]/company/{id}")]
         public async Task<IActionResult> GetCategoriesByCompanyId(String id)
         {
             try

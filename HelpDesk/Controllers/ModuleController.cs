@@ -68,7 +68,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/GetModulesByCompanyId/{id}")]
+        [Route("[controller]/Company/{id}")]
         public async Task<IActionResult> GetModulesByCompanyId(String id)
         {
             try

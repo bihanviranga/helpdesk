@@ -20,6 +20,7 @@ namespace HelpDesk.Controllers
             this._mapper = mapper;
             this._repository = repository;
         }
+        [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
             try
@@ -58,7 +59,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/GetProductsByCompanyId/{id}")]
+        [Route("[controller]/Company/{id}")]
         public async Task<IActionResult> GetProductsByCompanyId(String id)
         {
             try
