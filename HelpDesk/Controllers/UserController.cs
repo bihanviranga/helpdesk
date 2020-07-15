@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -71,6 +72,8 @@ namespace HelpDesk.Controllers
                     {
                         new Claim("UserName", result.UserName.ToString()),
                         new Claim("UserRole", result.UserRole.ToString()),
+                        new Claim("CompanyId", result.CompanyId.ToString()),
+                        new Claim("Email", result.Email.ToString()),
                         new Claim("UserType", result.UserType.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
@@ -88,12 +91,53 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        [Authorize]
+        public async Task<IActionResult> GetUsers()
         {
+            var usersList = new List<UserDto>();
             try
             {
-                var users = await _repository.User.GetAllUsers();
-                return Ok(users);
+                //geting information from JWT decript ....
+                var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+                
+               if(userRole == "Manager")
+                {
+                    var users = await _repository.User.GetUsersByCondition(userType , userCompanyId);
+                    
+                    //converting user model list to UserDto List
+                    foreach(var user in users)
+                    {
+                        if(user.CompanyId != null)
+                        {
+                            usersList.Add( _mapper.Map<UserDto>(user));
+                        }
+                    
+                    }
+
+                    // adding Company Name to each user
+                    foreach(var user in usersList)
+                    {
+                        var tempUserRes = await _repository.Company.GetCompanyById(new Guid(user.CompanyId));
+                        
+                        if(tempUserRes == null)
+                        {
+                            user.CompanyName = null ;
+                        }
+
+                        user.CompanyName = tempUserRes.CompanyName;
+                    }
+
+                    return Ok(usersList);
+
+                }else if (userRole == "User")
+                {
+                    return StatusCode(401, "401 Unauthorized  Access");
+                }
+
+                return StatusCode(500, "Something went wrong");
+               
             }
             catch(Exception)
             {

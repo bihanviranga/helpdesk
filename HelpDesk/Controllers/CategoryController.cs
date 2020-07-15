@@ -35,6 +35,31 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
+        [Route("[controller]/company/{id}")]
+        public async Task<IActionResult> GetCategoriesByCompanyId(String id)
+        {
+            try
+            {
+                var categories = await _repository.Category.GetCategoriesByCompanyId(id);
+
+                if (categories == null)
+                {
+                    return StatusCode(404, "Not Found");
+                }
+                else
+                {
+                    //mappers not use -> ** should dev in future
+                    //var productResult = _mapper.Map<ProductDto>(product);
+                    return Ok(categories);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
+        [HttpGet]
         [Route("[controller]/{id}")]
         public async Task<IActionResult> GetCategoryById(String id)
         {

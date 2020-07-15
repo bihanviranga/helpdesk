@@ -31,6 +31,11 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(p => p.ProductId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<ProductModel>> GetProductsByCompanyId(string id)
+        {
+            return await FindByCondition(p => p.CompanyId.Equals(id.ToString())).ToListAsync();
+        }
+
         public void UpdateProduct(ProductModel product)
         {
             Update(product);

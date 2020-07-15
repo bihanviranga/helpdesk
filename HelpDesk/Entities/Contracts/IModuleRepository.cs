@@ -10,6 +10,7 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<ModuleModel>> GetAllModules();
         Task<ModuleModel> GetModuleById(String id);
+        Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(String id);
         void CreateModule(ModuleModel module);
         void DeleteModule(ModuleModel module);
         void UpdateModule(ModuleModel module);

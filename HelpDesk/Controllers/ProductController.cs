@@ -20,6 +20,7 @@ namespace HelpDesk.Controllers
             this._mapper = mapper;
             this._repository = repository;
         }
+        [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
             try
@@ -39,15 +40,41 @@ namespace HelpDesk.Controllers
             try
             {
                 var product = await _repository.Product.GetProductById(id);
+                
                 if (product == null)
                 {
-                    return NotFound();
+                    return StatusCode(404, "Not Found");
                 }
                 else
                 {
                     //mappers not use -> ** should dev in future
                     //var productResult = _mapper.Map<ProductDto>(product);
                     return Ok(product);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
+        [HttpGet]
+        [Route("[controller]/Company/{id}")]
+        public async Task<IActionResult> GetProductsByCompanyId(String id)
+        {
+            try
+            {
+                var products = await _repository.Product.GetProductsByCompanyId(id);
+                
+                if (products == null)
+                {
+                    return StatusCode(404, "Not Found");
+                }
+                else
+                {
+                    //mappers not use -> ** should dev in future
+                    //var productResult = _mapper.Map<ProductDto>(product);
+                    return Ok(products);
                 }
             }
             catch (Exception)

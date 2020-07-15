@@ -33,6 +33,7 @@ namespace HelpDesk.Entities.Repository
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             return this.HelpDeskContext.Set<T>().Where(expression);
+            // where( u => User.Claims.First( c=>c.Type == 'Manager' ) )
         }
 
         public void Update(T entity)

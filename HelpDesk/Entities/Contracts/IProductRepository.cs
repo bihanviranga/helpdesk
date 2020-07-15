@@ -10,6 +10,7 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<ProductModel>> GetAllProducts();
         Task<ProductModel> GetProductById(String id);
+        Task<IEnumerable<ProductModel>> GetProductsByCompanyId(String id);
         void CreateProduct(ProductModel product);
         void UpdateProduct(ProductModel product);
         void DeleteProduct(ProductModel product);
