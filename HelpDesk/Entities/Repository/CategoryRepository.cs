@@ -39,6 +39,21 @@ namespace HelpDesk.Entities.Repository
         {
             return await FindByCondition(c => c.CompanyId.Equals(id.ToString())).ToListAsync();
         }
+
+        public async Task<IEnumerable<CategoryModel>> GetCategoriesByCondition(string userType, string userCompanyId)
+        {
+            if (userType == "Clien")
+            {
+                return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
+                       .OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+            else if (userType == "HelpDesk")
+            {
+                return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+
+            return null;
+        }
     }
 }
 

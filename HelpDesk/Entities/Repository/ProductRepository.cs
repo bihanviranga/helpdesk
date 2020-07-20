@@ -36,6 +36,21 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(p => p.CompanyId.Equals(id.ToString())).ToListAsync();
         }
 
+        public async Task<IEnumerable<ProductModel>> GetProductsByCondition(string userType, string userCompanyId)
+        {
+            if (userType == "Clien")
+            {
+                return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
+                       .OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+            else if (userType == "HelpDesk")
+            {
+                return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+
+            return null;
+        }
+
         public void UpdateProduct(ProductModel product)
         {
             Update(product);
