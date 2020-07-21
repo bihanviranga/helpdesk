@@ -34,7 +34,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}")]
+        [Route("[controller]/{id}", Name = "TicketById")]
         public async Task<IActionResult> GetTicketById(Guid id)
         {
             try
@@ -58,7 +58,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTicket([FromBody]CreateTicketDto CreateTicket)
+        public async Task<IActionResult> CreateTicket([FromBody] CreateTicketDto CreateTicket)
         {
             try
             {
@@ -67,16 +67,16 @@ namespace HelpDesk.Controllers
                     return BadRequest("Ticket object is null");
                 }
 
-                // convert incoming CompanyCreateDto to actual CompanyModel instance
-                var creatTicketEntity = _mapper.Map<TicketModel>(CreateTicket);
+                // convert incoming Dto to actual Model instance
+                var createTicketEntity = _mapper.Map<TicketModel>(CreateTicket);
 
-                _repository.Ticket.CreateTicket(creatTicketEntity);
+                _repository.Ticket.CreateTicket(createTicketEntity);
                 await _repository.Save();
 
                 // convert the model back to a DTO for output
-                //var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
+                var createdTicket = _mapper.Map<TicketDto>(createTicketEntity);
 
-                return Json("Ticket has been created");
+                return CreatedAtRoute("TicketById", new { id = createTicketEntity.TicketId }, createdTicket);
             }
             catch (Exception)
             {
