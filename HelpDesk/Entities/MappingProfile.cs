@@ -17,7 +17,7 @@ namespace HelpDesk.Entities
 
             CreateMap<UserRegistrationDto, UserModel>();
             CreateMap<UserModel, UserDto>();
-            CreateMap< UserDto , UserModel>();
+            CreateMap<UserDto, UserModel>();
 
             CreateMap<ResTemplateModel, ResTemplateDto>();
             CreateMap<ResTemplateCreateDto, ResTemplateModel>();
@@ -29,7 +29,8 @@ namespace HelpDesk.Entities
 
             CreateMap<TicketTimelineModel, TicketTimelineDto>();
 
-            CreateMap<CreateTicketDto ,TicketModel>();
+            CreateMap<CreateTicketDto, TicketModel>();
+            CreateMap<TicketModel, TicketDto>();
         }
     }
 }
