@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
@@ -25,17 +26,20 @@ namespace HelpDesk.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCompanies()
         {
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             try
             {
-                // Get the results from repo, and convert (map) them to a DTO.
-                var companies = await _repository.Company.GetAllCompanies();
-                var companiesResult = _mapper.Map<IEnumerable<CompanyDetailDto>>(companies);
-                return Ok(companiesResult);
+                return Ok(await _repository.Company.GetCompaniesByCondition(userType, userCompanyId));
+               
             }
             catch (Exception)
             {
                 return StatusCode(500, "Something went wrong");
             }
+           
         }
 
 

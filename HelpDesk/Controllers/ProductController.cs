@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using System.Security.Claims;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,13 +22,30 @@ namespace HelpDesk.Controllers
             this._repository = repository;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetProducts()
         {
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value; 
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             try
             {
-                return Ok(await _repository.Product.GetAllProducts());
+                if (userRole == "Manager")
+                {
+
+                    return Ok(await _repository.Product.GetProductsByCondition(userType, userCompanyId));
+                }
+                else if (userRole == "Client")
+                {
+                    return StatusCode(401, "401 Unauthorized  Access");
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 return StatusCode(500, "Something went wrong");
             }

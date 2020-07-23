@@ -9,6 +9,7 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<CompanyModel>> GetAllCompanies();
         Task<CompanyModel> GetCompanyById(Guid id);
+        Task<IEnumerable<CompanyModel>> GetCompaniesByCondition(string userType, string userCompanyId);
         void CreateCompany(CompanyModel company);
         void UpdateCompany(CompanyModel company);
         void DeleteCompany(CompanyModel company);

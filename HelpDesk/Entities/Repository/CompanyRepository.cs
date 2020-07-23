@@ -28,6 +28,21 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(cmp => cmp.CompanyName).ToListAsync();
         }
 
+        public async Task<IEnumerable<CompanyModel>> GetCompaniesByCondition(string userType, string userCompanyId)
+        {
+            if (userType == "Client")
+            {
+                return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
+                       .OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+            else if (userType == "HelpDesk")
+            {
+                return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+
+            return null;
+        }
+
         public async Task<CompanyModel> GetCompanyById(Guid id)
         {
             // Doesn't work in MSSQL without converting the Guid to a string.

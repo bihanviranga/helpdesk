@@ -56,14 +56,30 @@ namespace HelpDesk.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllModules()
         {
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             try
             {
-                var modules = await _repository.Module.GetAllModules();
-                return Ok(modules);
+                if (userRole == "Manager")
+                {
+
+                    return Ok(await _repository.Module.GetModuleByCondition(userType, userCompanyId));
+                }
+                else if (userRole == "Client")
+                {
+                    return StatusCode(401, "401 Unauthorized  Access");
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+
             }
             catch (Exception)
             {
-                return StatusCode(500, "Something went worng !!");
+                return StatusCode(500, "Something went wrong");
             }
         }
 

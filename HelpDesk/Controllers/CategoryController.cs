@@ -22,11 +22,27 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCaregories()
+        public async Task<IActionResult> GetCategories()
         {
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             try
             {
-                return Ok(await _repository.Category.GetAllCategories());
+                if (userRole == "Manager") {
+                   
+                    return Ok(await _repository.Category.GetCategoriesByCondition(userType , userCompanyId));
+                }
+                else if(userRole == "Client")
+                {
+                    return StatusCode(401, "401 Unauthorized  Access");
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+                    
             }
             catch (Exception)
             {

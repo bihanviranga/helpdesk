@@ -11,6 +11,7 @@ namespace HelpDesk.Entities.Contracts
         Task<IEnumerable<CategoryModel>> GetAllCategories();
         Task<CategoryModel> GetCategoryById(String id);
         Task<IEnumerable<CategoryModel>> GetCategoriesByCompanyId(String id);
+        Task<IEnumerable<CategoryModel>> GetCategoriesByCondition(string userType, string userCompanyId);
         void CreateCategory(CategoryModel category);
         void DeleteCategory(CategoryModel category);
         void UpdateCategory(CategoryModel category);
