@@ -36,6 +36,9 @@ namespace HelpDesk.Entities
 
             CreateMap<CategoryCreateDto, CategoryModel>();
             CreateMap<CategoryModel, CategoryDto>();
+
+            CreateMap<ModuleCreateDto, ModuleModel>();
+            CreateMap<ModuleModel, ModuleDto>();
         }
     }
 }

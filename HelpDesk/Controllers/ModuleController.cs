@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,23 +23,38 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateModule([FromBody]ModuleModel module)
+        public async Task<IActionResult> CreateModule([FromBody] ModuleCreateDto module)
         {
-            if (module != null)
+            try
             {
-                _repository.Module.Create(module);
-                await _repository.Save();
-                return Ok(Json("Done"));
-            }
-            else
-            {
-                return Json("Something Went worng");
-            }
+                if (module == null)
+                {
+                    return BadRequest("Module object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid module object");
+                }
 
+                // incoming dto --> model
+                var moduleEntity = _mapper.Map<ModuleModel>(module);
+
+                _repository.Module.CreateModule(moduleEntity);
+                await _repository.Save();
+
+                // created entity --> outgoing dto
+                var createdModule = _mapper.Map<ModuleDto>(moduleEntity);
+
+                return CreatedAtRoute("ModuleById", new { id = moduleEntity.ModuleId }, createdModule);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
         }
 
         [HttpGet]
-        [Route("[controller]/{id}")]
+        [Route("[controller]/{id}", Name = "ModuleById")]
         public async Task<IActionResult> GetModuleById(String id)
         {
             try
