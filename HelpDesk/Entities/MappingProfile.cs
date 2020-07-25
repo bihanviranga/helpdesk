@@ -10,6 +10,8 @@ namespace HelpDesk.Entities
     {
         public MappingProfile()
         {
+            // format: CreateMap<Source, Destination>();
+
             CreateMap<CompanyModel, CompanyDto>();
             CreateMap<CompanyModel, CompanyDetailDto>();
             CreateMap<CompanyCreateDto, CompanyModel>();
@@ -31,6 +33,12 @@ namespace HelpDesk.Entities
 
             CreateMap<CreateTicketDto, TicketModel>();
             CreateMap<TicketModel, TicketDto>();
+
+            CreateMap<CategoryCreateDto, CategoryModel>();
+            CreateMap<CategoryModel, CategoryDto>();
+
+            CreateMap<ModuleCreateDto, ModuleModel>();
+            CreateMap<ModuleModel, ModuleDto>();
         }
     }
 }

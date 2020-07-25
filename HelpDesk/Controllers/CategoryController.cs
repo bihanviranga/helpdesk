@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,11 +31,12 @@ namespace HelpDesk.Controllers
 
             try
             {
-                if (userRole == "Manager") {
-                   
-                    return Ok(await _repository.Category.GetCategoriesByCondition(userType , userCompanyId));
+                if (userRole == "Manager")
+                {
+
+                    return Ok(await _repository.Category.GetCategoriesByCondition(userType, userCompanyId));
                 }
-                else if(userRole == "Client")
+                else if (userRole == "Client")
                 {
                     return StatusCode(401, "401 Unauthorized  Access");
                 }
@@ -42,7 +44,7 @@ namespace HelpDesk.Controllers
                 {
                     return StatusCode(500, "Something went wrong");
                 }
-                    
+
             }
             catch (Exception)
             {
@@ -76,7 +78,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}")]
+        [Route("[controller]/{id}", Name = "CategoryById")]
         public async Task<IActionResult> GetCategoryById(String id)
         {
             try
@@ -100,7 +102,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCAtegory([FromBody]CategoryModel category)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto category)
         {
             try
             {
@@ -114,16 +116,16 @@ namespace HelpDesk.Controllers
                     return BadRequest("Invalid company object");
                 }
 
-                // convert incoming CompanyCreateDto to actual CompanyModel instance
-                // var companyEntity = _mapper.Map<CompanyModel>(company);
+                // convert incoming Dto to actual Model instance
+                var categoryEntity = _mapper.Map<CategoryModel>(category);
 
-                _repository.Category.CreateCategory(category);
+                _repository.Category.CreateCategory(categoryEntity);
                 await _repository.Save();
 
                 // convert the model back to a DTO for output
-                //var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
+                var createdCategory = _mapper.Map<CategoryDto>(categoryEntity);
 
-                return Json("category has been created");
+                return CreatedAtRoute("CategoryById", new { id = categoryEntity.CategoryId }, createdCategory);
             }
             catch (Exception)
             {
