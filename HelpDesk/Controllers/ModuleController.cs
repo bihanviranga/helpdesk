@@ -6,12 +6,14 @@ using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HelpDesk.Controllers
 {
+    [Authorize]
     public class ModuleController : Controller
     {
         private readonly IRepositoryWrapper _repository;
@@ -70,6 +72,7 @@ namespace HelpDesk.Controllers
 
 
         [HttpGet]
+        
         public async Task<IActionResult> GetAllModules()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;

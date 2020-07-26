@@ -2,6 +2,7 @@
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects.Ticket;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Controllers
 {
+    [Authorize]
     public class TicketController : Controller
     {
         private readonly IRepositoryWrapper _repository;
@@ -35,11 +37,12 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{id}", Name = "TicketById")]
-        public async Task<IActionResult> GetTicketById(Guid id)
+        public async Task<IActionResult> GetTicketById(string id)
         {
             try
             {
-                var ticket = await _repository.Ticket.GetTicketById(id);
+
+                var ticket = await _repository.Ticket.GetTicketById(new Guid(id));
                 if (ticket == null)
                 {
                     return NotFound();

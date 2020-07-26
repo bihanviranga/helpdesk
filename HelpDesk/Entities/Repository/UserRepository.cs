@@ -37,7 +37,7 @@ namespace HelpDesk.Entities.Repository
 
         public async Task<IEnumerable<UserModel>> GetUsersByCondition(string userType , string userCompanyId)
         {
-            if (userType == "Clien")
+            if (userType == "Client")
             {
                  return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
                         .OrderBy(cmp => cmp.CompanyId).ToListAsync();             
