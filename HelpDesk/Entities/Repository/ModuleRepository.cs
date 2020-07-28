@@ -41,6 +41,7 @@ namespace HelpDesk.Entities.Repository
             return null;
         }
 
+
         public async Task<ModuleModel> GetModuleById(String id)
         {
             return await FindByCondition(m => m.ModuleId.Equals(id.ToString())).FirstOrDefaultAsync();
@@ -55,6 +56,7 @@ namespace HelpDesk.Entities.Repository
         {
             Update(module);
         }
+
     }
 }
 

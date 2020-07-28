@@ -30,6 +30,7 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Register")]
+        [Authorize]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto newUser)
         {
 
@@ -57,6 +58,7 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Login")]
+      
         public async Task<IActionResult> Login([FromBody] UserLoginDto model) //not working yet
         {
             //user existing chechk code here ( not dev yet )
@@ -92,6 +94,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Authorize]
+
         public async Task<IActionResult> GetUsers()
         {
             var usersList = new List<UserDto>();
@@ -148,6 +151,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{userName}")]
+        [Authorize]
         public async Task<IActionResult> GetUserByUserName(string userName)
         {
             try
@@ -165,6 +169,7 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{userName}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUser(string userName)
         {
             var user = await _repository.User.GetUserByUserName(new Guid(userName));

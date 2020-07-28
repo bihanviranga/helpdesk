@@ -11,7 +11,7 @@ namespace HelpDesk.Entities.Contracts
         Task<IEnumerable<ModuleModel>> GetAllModules();
         Task<ModuleModel> GetModuleById(String id);
         Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(String id);
-        Task<IEnumerable<ModuleModel>> GetModuleByConditoion(string userType, string userCompanyId);
+        Task<IEnumerable<ModuleModel>> GetModuleByCondition(string userType, string userCompanyId);
         void CreateModule(ModuleModel module);
         void DeleteModule(ModuleModel module);
         void UpdateModule(ModuleModel module);

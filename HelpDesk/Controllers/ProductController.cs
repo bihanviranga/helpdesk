@@ -7,11 +7,13 @@ using HelpDesk.Entities.Contracts;
 using System.Security.Claims;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HelpDesk.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IRepositoryWrapper _repository;
@@ -22,6 +24,7 @@ namespace HelpDesk.Controllers
             this._repository = repository;
         }
         [HttpGet]
+        
         public async Task<IActionResult> GetProducts()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value; 

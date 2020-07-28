@@ -6,6 +6,7 @@ using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,6 +24,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetCategories()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -54,6 +56,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/company/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetCategoriesByCompanyId(String id)
         {
             try
@@ -79,6 +82,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{id}", Name = "CategoryById")]
+        [Authorize]
         public async Task<IActionResult> GetCategoryById(String id)
         {
             try
@@ -102,6 +106,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto category)
         {
             try
@@ -135,6 +140,7 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCategory(String id)
         {
             var category = await _repository.Category.GetCategoryById(id);

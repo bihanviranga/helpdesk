@@ -35,7 +35,7 @@ namespace HelpDesk.Entities.Repository
                 return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
                        .OrderBy(cmp => cmp.CompanyId).ToListAsync();
             }
-            else if (userType == "HelpDesk")
+            else    if (userType == "HelpDesk")
             {
                 return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
             }
