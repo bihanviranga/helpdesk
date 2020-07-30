@@ -25,9 +25,22 @@ namespace HelpDesk.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTickets()
         {
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
             try
             {
-                return Ok(await _repository.Ticket.GetAllTicket());
+                if ( userType == "HelpDesk") 
+                {
+                    return Ok(await _repository.Ticket.GetAllTicket());
+                }
+                else if(userType == "Client")
+                {
+                    return Ok(await _repository.Ticket.GetTicketByCondition(new Guid(userCompanyId)));
+                }
+                return StatusCode(500, "Something went wrong");
+
             }
             catch (Exception)
             {

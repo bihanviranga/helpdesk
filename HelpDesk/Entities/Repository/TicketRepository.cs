@@ -27,6 +27,11 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(tkt => tkt.TktCreatedDate).ToListAsync();
         }
 
+        public async Task<IEnumerable<TicketModel>> GetTicketByCondition(Guid id)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).ToListAsync();
+        }
+
         public async Task<TicketModel> GetTicketById(Guid id)
         {
             return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString())).FirstOrDefaultAsync();
