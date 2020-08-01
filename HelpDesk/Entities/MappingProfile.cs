@@ -33,6 +33,7 @@ namespace HelpDesk.Entities
 
             CreateMap<CreateTicketDto, TicketModel>();
             CreateMap<TicketModel, TicketDto>();
+            CreateMap<TicketDto , TicketModel>();
 
             CreateMap<CategoryCreateDto, CategoryModel>();
             CreateMap<CategoryModel, CategoryDto>();

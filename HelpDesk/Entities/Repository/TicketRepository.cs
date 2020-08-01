@@ -27,14 +27,23 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(tkt => tkt.TktCreatedDate).ToListAsync();
         }
 
-        public async Task<IEnumerable<TicketModel>> GetTicketByCondition(Guid id)
+        public async Task<IEnumerable<TicketModel>> GetTicketByCondition(Guid id ,string userRole ,string userName)
         {
-            return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).ToListAsync();
+            if(userRole == "Manager")
+            {
+                return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).ToListAsync();
+            }else if (userRole == "Client")
+            {
+                return await FindByCondition(tkt => tkt.CompanyId == id.ToString() && tkt.TktCreatedBy == userName ).ToListAsync();
+            }
+
+            return null;
+           
         }
 
         public async Task<TicketModel> GetTicketById(Guid id)
         {
-            return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString()) ).FirstOrDefaultAsync();
         }
 
         public void UpdateTicket(TicketModel ticket)

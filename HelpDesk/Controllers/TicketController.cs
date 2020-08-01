@@ -23,21 +23,62 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTickets()
+      
+        public async Task<IActionResult> GetTickets( )
         {
+            var ticketList = new List<TicketDto>();
+
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userName = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
 
             try
             {
                 if ( userType == "HelpDesk") 
                 {
-                    return Ok(await _repository.Ticket.GetAllTicket());
+                    var tkts = await _repository.Ticket.GetAllTicket();
+
+                    foreach (TicketModel tkt in tkts)
+                    {
+                        var _tkt = _mapper.Map<TicketDto>(tkt);
+                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId);
+                        _tkt.CategoryName = c.CategoryName;
+
+                        var p = await _repository.Product.GetProductById(tkt.ProductId);
+                        _tkt.ProductName = p.ProductName;
+
+                        var m = await _repository.Module.GetModuleById(tkt.ModuleId);
+                        _tkt.ModuleName = m.ModuleName;
+
+                        var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
+                        _tkt.CompanyName = companyName.CompanyName;
+
+                        ticketList.Add(_tkt);
+                    }
+                    return Ok(ticketList);
                 }
                 else if(userType == "Client")
                 {
-                    return Ok(await _repository.Ticket.GetTicketByCondition(new Guid(userCompanyId)));
+                    var tkts = await _repository.Ticket.GetTicketByCondition(new Guid(userCompanyId), userRole, userName);
+                    foreach(TicketModel tkt in tkts)
+                    {
+                        var _tkt = _mapper.Map<TicketDto>(tkts);
+                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId);
+                        _tkt.CategoryName = c.CategoryName;
+
+                        var p = await _repository.Product.GetProductById(tkt.ProductId);
+                        _tkt.ProductName = p.ProductName;
+
+                        var m = await _repository.Module.GetModuleById(tkt.ModuleId);
+                        _tkt.ModuleName = m.ModuleName;
+
+                        var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
+                        _tkt.CompanyName = companyName.CompanyName;
+
+                        ticketList.Add(_tkt);
+                    }
+                    return Ok(ticketList);
                 }
                 return StatusCode(500, "Something went wrong");
 
@@ -47,6 +88,8 @@ namespace HelpDesk.Controllers
                 return StatusCode(500, "Something went wrong");
             }
         }
+
+       
 
         [HttpGet]
         [Route("[controller]/{id}", Name = "TicketById")]
