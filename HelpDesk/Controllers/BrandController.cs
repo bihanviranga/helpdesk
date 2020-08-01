@@ -29,7 +29,7 @@ namespace HelpDesk.Controllers
             try
             {
                 var brands = await _repository.Brand.GetAllBrands();
-                var brandsResult = _mapper.Map<BrandDto>(brands);
+                var brandsResult = _mapper.Map<IEnumerable<BrandDto>>(brands);
                 return Ok(brandsResult);
             }
             catch (Exception)
@@ -95,7 +95,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBrand(string id, [FromBody] BrandCreateDto brand)
+        public async Task<IActionResult> UpdateBrand(string id, [FromBody] BrandUpdateDto brand)
         {
             try
             {

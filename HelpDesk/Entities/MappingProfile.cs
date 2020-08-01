@@ -42,6 +42,7 @@ namespace HelpDesk.Entities
 
             CreateMap<BrandCreateDto, CompanyBrandModel>();
             CreateMap<CompanyBrandModel, BrandDto>();
+            CreateMap<BrandUpdateDto, CompanyBrandModel>();
         }
     }
 }
