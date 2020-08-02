@@ -40,6 +40,10 @@ namespace HelpDesk.Entities
 
             CreateMap<ModuleCreateDto, ModuleModel>();
             CreateMap<ModuleModel, ModuleDto>();
+
+            CreateMap<BrandCreateDto, CompanyBrandModel>();
+            CreateMap<CompanyBrandModel, BrandDto>();
+            CreateMap<BrandUpdateDto, CompanyBrandModel>();
         }
     }
 }
