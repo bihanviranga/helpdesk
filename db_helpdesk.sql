@@ -279,9 +279,9 @@ CREATE TABLE [dbo].[Tkt_TicketOperator]
 (
 	[TktOperator] [nvarchar](20) NOT NULL,
 	[TicketID] [char](36) NOT NULL,
-	[Seq_no] [int] NULL,
+	[Seq_no] [int] NOT NULL,
 	[AssignedDate] [datetime] NOT NULL,
-	[AssignedBy] [char(20)] NULL,
+	[AssignedBy] [char](20) NULL,
 	CONSTRAINT [PK_Tkt_TicketOperator] PRIMARY KEY CLUSTERED
 (
 	[TktOperator] ASC,
