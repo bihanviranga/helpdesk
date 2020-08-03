@@ -32,7 +32,7 @@ namespace HelpDesk.Entities.Repository
             if(userRole == "Manager")
             {
                 return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).ToListAsync();
-            }else if (userRole == "Client")
+            }else if (userRole == "User")
             {
                 return await FindByCondition(tkt => tkt.CompanyId == id.ToString() && tkt.TktCreatedBy == userName ).ToListAsync();
             }

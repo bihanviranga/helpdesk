@@ -63,7 +63,7 @@ namespace HelpDesk.Controllers
                     var tkts = await _repository.Ticket.GetTicketByCondition(new Guid(userCompanyId), userRole, userName);
                     foreach(TicketModel tkt in tkts)
                     {
-                        var _tkt = _mapper.Map<TicketDto>(tkts);
+                        var _tkt = _mapper.Map<TicketDto>(tkt);
                         var c = await _repository.Category.GetCategoryById(tkt.CategoryId);
                         _tkt.CategoryName = c.CategoryName;
 
@@ -95,19 +95,35 @@ namespace HelpDesk.Controllers
         [Route("[controller]/{id}", Name = "TicketById")]
         public async Task<IActionResult> GetTicketById(string id)
         {
+            
+
             try
             {
 
-                var ticket = await _repository.Ticket.GetTicketById(new Guid(id));
-                if (ticket == null)
+                var _ticket = await _repository.Ticket.GetTicketById(new Guid(id));
+                if (_ticket == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(ticket);
+                    var _tkt = _mapper.Map<TicketDto>(_ticket);
+
+                    var c = await _repository.Category.GetCategoryById(_ticket.CategoryId);
+                    _tkt.CategoryName = c.CategoryName;
+
+                    var p = await _repository.Product.GetProductById(_ticket.ProductId);
+                    _tkt.ProductName = p.ProductName;
+
+                    var m = await _repository.Module.GetModuleById(_ticket.ModuleId);
+                    _tkt.ModuleName = m.ModuleName;
+
+                    var companyName = await _repository.Company.GetCompanyById(new Guid(_ticket.CompanyId));
+                    _tkt.CompanyName = companyName.CompanyName;
+
+                   
+
+                    return Ok(_tkt);
                 }
             }
             catch (Exception)
@@ -145,7 +161,7 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<IActionResult> DeleteTicket(Guid id)
         {
             var ticket = await _repository.Ticket.GetTicketById(id);
             if (ticket == null)
@@ -157,6 +173,39 @@ namespace HelpDesk.Controllers
                 _repository.Ticket.DeleteTicket(ticket);
                 await _repository.Save();
                 return Json("Ticket successfully removed");
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateTicket([FromBody]TicketDto _tkt)
+        {
+            try
+            {
+                var tkt = _mapper.Map<TicketModel>(_tkt);
+                _repository.Ticket.UpdateTicket(tkt);
+                await _repository.Save();
+
+                var updatedTkt = _mapper.Map<TicketDto>(tkt);
+
+                var c = await _repository.Category.GetCategoryById(updatedTkt.CategoryId);
+                updatedTkt.CategoryName = c.CategoryName;
+
+                var p = await _repository.Product.GetProductById(updatedTkt.ProductId);
+                updatedTkt.ProductName = p.ProductName;
+
+                var m = await _repository.Module.GetModuleById(updatedTkt.ModuleId);
+                updatedTkt.ModuleName = m.ModuleName;
+
+                var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
+                updatedTkt.CompanyName = companyName.CompanyName;
+
+                return Ok(updatedTkt);
+
+
+            }
+            catch
+            {
+                return Json("Somthing Went worng");
             }
         }
     }
