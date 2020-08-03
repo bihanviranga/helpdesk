@@ -52,14 +52,11 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastEditedBy)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.LastEditedBy).HasMaxLength(20);
 
                 entity.Property(e => e.LastEditedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ProductId)
-                    .IsRequired()
                     .HasColumnName("ProductID")
                     .HasMaxLength(50);
             });
@@ -94,6 +91,8 @@ namespace HelpDesk.Entities
                     .HasMaxLength(36)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.CompanyName).IsRequired();
             });
 
             modelBuilder.Entity<CompanyBrandModel>(entity =>
@@ -111,6 +110,8 @@ namespace HelpDesk.Entities
                     .HasMaxLength(36)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.BrandName).IsRequired();
             });
 
             modelBuilder.Entity<ConversationModel>(entity =>
@@ -185,9 +186,7 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.NotifDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NotifUrl)
-                    .IsRequired()
-                    .HasColumnName("NotifURL");
+                entity.Property(e => e.NotifUrl).HasColumnName("NotifURL");
 
                 entity.Property(e => e.NotifUser)
                     .IsRequired()
@@ -226,8 +225,6 @@ namespace HelpDesk.Entities
                     .HasMaxLength(20);
 
                 entity.Property(e => e.TemplateAddedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.TemplateContent).IsRequired();
 
                 entity.Property(e => e.TemplateName).IsRequired();
             });
@@ -311,7 +308,10 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.SeqNo).HasColumnName("Seq_no");
 
-                entity.Property(e => e.AssignedBy).HasColumnType("datetime");
+                entity.Property(e => e.AssignedBy)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
                 entity.Property(e => e.AssignedDate).HasColumnType("datetime");
             });
@@ -334,11 +334,8 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.TktEvent).IsRequired();
 
                 entity.Property(e => e.TxnUserId)
-                    .IsRequired()
                     .HasColumnName("TxnUserID")
                     .HasMaxLength(20);
-
-                entity.Property(e => e.TxnValues).IsRequired();
             });
 
             modelBuilder.Entity<UserModel>(entity =>
