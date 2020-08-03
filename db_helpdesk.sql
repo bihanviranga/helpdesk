@@ -81,15 +81,15 @@ GO
 CREATE TABLE [dbo].[Tkt_Article]
 (
 	[ArticleID] [char](36) NOT NULL,
-	[ProductID] [nvarchar](50) NOT NULL,
+	[ProductID] [nvarchar](50) NULL,
 	[CreatedBy] [nvarchar](20) NOT NULL,
 	[AcceptedBy] [nvarchar](20) NULL,
-	[CreatedDate] [datetime] NOT NULL,
+	[CreatedDate] [datetime] NULL,
 	[AcceptedDate] [datetime] NULL,
 	[ArticleTitle] [nvarchar](max) NOT NULL,
 	[ArticleContent] [nvarchar](max) NOT NULL,
-	[LastEditedDate] [datetime] NOT NULL,
-	[LastEditedBy] [nvarchar](20) NOT NULL,
+	[LastEditedDate] [datetime] NULL,
+	[LastEditedBy] [nvarchar](20) NULL,
 	CONSTRAINT [PK_Tkt_Article] PRIMARY KEY CLUSTERED
 (
 	[ArticleID] ASC
@@ -121,7 +121,7 @@ GO
 CREATE TABLE [dbo].[Tkt_Company]
 (
 	[CompanyID] [char](36) NOT NULL,
-	[CompanyName] [nvarchar](max) NULL,
+	[CompanyName] [nvarchar](max) NOT NULL,
 	CONSTRAINT [PK_Tkt_Company] PRIMARY KEY CLUSTERED
 (
 	[CompanyID] ASC
@@ -137,7 +137,7 @@ CREATE TABLE [dbo].[Tkt_CompanyBrand]
 (
 	[BrandID] [nvarchar](20) NOT NULL,
 	[CompanyID] [char](36) NOT NULL,
-	[BrandName] [nvarchar](max) NULL,
+	[BrandName] [nvarchar](max) NOT NULL,
 	CONSTRAINT [PK_Tkt_CompanyBrand] PRIMARY KEY CLUSTERED
 (
 	[BrandID] ASC,
@@ -156,7 +156,7 @@ CREATE TABLE [dbo].[Tkt_Conversation]
 	[TicketID] [char](36) NOT NULL,
 	[CvSender] [nvarchar](20) NOT NULL,
 	[CvSenderType] [nvarchar](20) NOT NULL,
-	[CvSendDate] [datetime] NOT NULL,
+	[CvSendDate] [datetime] NULL,
 	[CvContent] [nvarchar](max) NOT NULL,
 	CONSTRAINT [PK_Tkt_Conversation] PRIMARY KEY CLUSTERED
 (
@@ -194,7 +194,7 @@ CREATE TABLE [dbo].[Tkt_Notification]
 	[NotifContent] [nvarchar](max) NOT NULL,
 	[NotifUser] [nvarchar](20) NOT NULL,
 	[NotifRead] [bit] NOT NULL,
-	[NotifURL] [nvarchar](max) NOT NULL,
+	[NotifURL] [nvarchar](max) NULL,
 	[NotifDate] [datetime] NOT NULL,
 	CONSTRAINT [PK_Tkt_Notification] PRIMARY KEY CLUSTERED
 (
@@ -230,9 +230,9 @@ CREATE TABLE [dbo].[Tkt_ResTemplate]
 	[TemplateID] [int] IDENTITY(1,1),
 	[TemplateName] [nvarchar](max) NOT NULL,
 	[TemplateDescription] [nvarchar](max) NULL,
-	[TemplateContent] [nvarchar](max) NOT NULL,
+	[TemplateContent] [nvarchar](max) NULL,
 	[TemplateAddedBy] [nvarchar](20) NOT NULL,
-	[TemplateAddedDate] [datetime] NOT NULL,
+	[TemplateAddedDate] [datetime] NULL,
 	CONSTRAINT [PK_Tkt_ResTemplate] PRIMARY KEY CLUSTERED
 (
 	[TemplateID] ASC
@@ -279,9 +279,9 @@ CREATE TABLE [dbo].[Tkt_TicketOperator]
 (
 	[TktOperator] [nvarchar](20) NOT NULL,
 	[TicketID] [char](36) NOT NULL,
-	[Seq_no] [int] NOT NULL,
+	[Seq_no] [int] NULL,
 	[AssignedDate] [datetime] NOT NULL,
-	[AssignedBy] [datetime] NOT NULL,
+	[AssignedBy] [char(20)] NULL,
 	CONSTRAINT [PK_Tkt_TicketOperator] PRIMARY KEY CLUSTERED
 (
 	[TktOperator] ASC,
@@ -300,8 +300,8 @@ CREATE TABLE [dbo].[Tkt_TicketTimeline]
 	[TicketID] [char](36) NOT NULL,
 	[TxnDateTime] [datetime] NOT NULL,
 	[TktEvent] [nvarchar](max) NOT NULL,
-	[TxnValues] [nvarchar](max) NOT NULL,
-	[TxnUserID] [nvarchar](20) NOT NULL,
+	[TxnValues] [nvarchar](max) NULL,
+	[TxnUserID] [nvarchar](20) NULL,
 	CONSTRAINT [PK_Tkt_TicketTimeline_1] PRIMARY KEY CLUSTERED
 (
 	[TicketID] ASC,
@@ -322,7 +322,7 @@ CREATE TABLE [dbo].[Tkt_User]
 	[FullName] [nvarchar](max) NOT NULL,
 	[Email] [nvarchar](max) NOT NULL,
 	[PasswordHash] [nvarchar](max) NOT NULL,
-	[Phone] [char](10) NULL,
+	[Phone] [char](20) NULL,
 	[UserImage] [nvarchar](max) NULL,
 	[UserRole] [nvarchar](20) NOT NULL,
 	CONSTRAINT [PK_Tkt_userz] PRIMARY KEY CLUSTERED
