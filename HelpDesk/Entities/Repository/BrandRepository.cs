@@ -33,6 +33,26 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(brd => brd.BrandId.Equals(id)).FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<CompanyBrandModel>> GetBrandsByCompanyId(string id)
+        {
+            return await FindByCondition(c => c.CompanyId.Equals(id.ToString())).ToListAsync();
+        }
+
+        public async Task<IEnumerable<CompanyBrandModel>> GetBrandsByCondition(string userType, string userCompanyId)
+        {
+            if (userType == "Client")
+            {
+                return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
+                       .OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+            else if (userType == "HelpDesk")
+            {
+                return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
+            }
+
+            return null;
+        }
+
         public void UpdateBrand(CompanyBrandModel brand)
         {
             Update(brand);

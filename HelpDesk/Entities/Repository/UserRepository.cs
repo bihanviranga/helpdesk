@@ -1,6 +1,7 @@
 ﻿using HelpDesk.Entities;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
+using HelpDesk.Entities.DataTransferObjects.User;
 using HelpDesk.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,7 +17,7 @@ namespace HelpDesk.Entities.Repository
 
         public void CreateUser(UserModel user)
         {
-            user.UserName = Guid.NewGuid().ToString();
+         
             Create(user);
         }
 
@@ -51,7 +52,7 @@ namespace HelpDesk.Entities.Repository
             
         }
 
-        public async Task<UserModel> GetUserByUserName(Guid userName)
+        public async Task<UserModel> GetUserByUserName(string userName)
         {
             return await FindByCondition(u => u.UserName.Equals(userName.ToString())).FirstOrDefaultAsync();
         }
@@ -65,6 +66,33 @@ namespace HelpDesk.Entities.Repository
                     )
                 .Where(u => u.PasswordHash.Equals(userLoginDto.Password.ToString()))
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<string> CheckAvaibality(CheckAvaibalityDto data)
+        {
+            var query1 = await HelpDeskContext.Set<UserModel>()
+                .Where(  u => u.UserName.Equals(data.UserName.ToString()) ) .FirstOrDefaultAsync();
+            
+            var query2 = await HelpDeskContext.Set<UserModel>()
+                .Where(  u =>  u.Email.Equals(data.Email.ToString()) ) .FirstOrDefaultAsync();
+
+            if(query1 == null && query2 == null)
+            {
+                return "NotTakenYet";
+            }
+            else if(query1 != null)
+            {
+                return "UserName_AlreadyTaken";
+            }
+            else if (query2 != null)
+            {
+                return "Email_AlreadyTaken";
+            }
+            else
+            {
+                return "Both_AlreadyTaken";
+            }
+
         }
     }
 }

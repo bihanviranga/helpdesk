@@ -8,6 +8,8 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<CompanyBrandModel>> GetAllBrands();
         Task<CompanyBrandModel> GetBrandById(string id);
+        Task<IEnumerable<CompanyBrandModel>> GetBrandsByCompanyId(string id);
+        Task<IEnumerable<CompanyBrandModel>> GetBrandsByCondition(string userType, string userCompanyId);
         void CreateBrand(CompanyBrandModel brand);
         void UpdateBrand(CompanyBrandModel brand);
         void DeleteBrand(CompanyBrandModel brand);
