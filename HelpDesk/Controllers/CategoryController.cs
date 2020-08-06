@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly IRepositoryWrapper _repository;
@@ -24,7 +25,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        
         public async Task<IActionResult> GetCategories()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -56,7 +57,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/company/{id}")]
-        [Authorize]
+       
         public async Task<IActionResult> GetCategoriesByCompanyId(String id)
         {
             try
@@ -82,7 +83,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{id}", Name = "CategoryById")]
-        [Authorize]
+        
         public async Task<IActionResult> GetCategoryById(String id)
         {
             try
@@ -106,7 +107,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto category)
         {
             try
@@ -140,7 +141,7 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{id}")]
-        [Authorize]
+        
         public async Task<IActionResult> DeleteCategory(String id)
         {
             var category = await _repository.Category.GetCategoryById(id);

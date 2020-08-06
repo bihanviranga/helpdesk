@@ -13,6 +13,7 @@ namespace HelpDesk.Entities.DataTransferObjects
         public String UserRole { get; set; }
         
         public String Phone { get; set; }
+        public String UserName { get; set; }
         public String FullName { get; set; }
         public String CompanyId { get; set; }
         public String UserType { get; set; }
