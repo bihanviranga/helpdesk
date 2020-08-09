@@ -10,6 +10,8 @@ namespace HelpDesk.Entities.Models
         public string TemplateDescription { get; set; }
         public string TemplateContent { get; set; }
         public string TemplateAddedBy { get; set; }
-        public DateTime TemplateAddedDate { get; set; }
+        public DateTime? TemplateAddedDate { get; set; }
+
+        public virtual UserModel TemplateAddedByNavigation { get; set; }
     }
 }

@@ -9,7 +9,10 @@ namespace HelpDesk.Entities.Models
         public string TicketId { get; set; }
         public string CvSender { get; set; }
         public string CvSenderType { get; set; }
-        public DateTime CvSendDate { get; set; }
+        public DateTime? CvSendDate { get; set; }
         public string CvContent { get; set; }
+
+        public virtual UserModel CvSenderNavigation { get; set; }
+        public virtual TicketModel Ticket { get; set; }
     }
 }
