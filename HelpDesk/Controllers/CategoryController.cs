@@ -168,7 +168,7 @@ namespace HelpDesk.Controllers
                 // convert the model back to a DTO for output
                 var createdCategory = _mapper.Map<CategoryDto>(categoryEntity);
 
-                return CreatedAtRoute("CategoryById", new { id = categoryEntity.CategoryId }, createdCategory);
+                return Ok(createdCategory);
             }
             catch (Exception)
             {
@@ -181,7 +181,7 @@ namespace HelpDesk.Controllers
         
         public async Task<IActionResult> DeleteCategory(String categoryId  , String companyId)
         {
-            var category = await _repository.Category.GetCategoryById(categoryId , companyId);
+            var category= await _repository.Category.GetCategoryById(categoryId, companyId);
             if (category == null)
             {
                 return StatusCode(500, "User Not Found");

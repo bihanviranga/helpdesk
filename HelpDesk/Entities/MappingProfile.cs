@@ -37,10 +37,14 @@ namespace HelpDesk.Entities
             CreateMap<TicketDto , TicketModel>();
 
             CreateMap<CategoryCreateDto, CategoryModel>();
+            CreateMap<CategoryModel , CategoryCreateDto>();
             CreateMap<CategoryModel, CategoryDto>();
+            CreateMap<CategoryDto , CategoryModel >();
 
             CreateMap<ModuleCreateDto, ModuleModel>();
+            CreateMap<ModuleModel , ModuleCreateDto >();
             CreateMap<ModuleModel, ModuleDto>();
+            CreateMap<ModuleDto , ModuleModel>();
 
             CreateMap<ProductModel, ProductCreateDto>();
             CreateMap<ProductCreateDto ,ProductModel>();
@@ -50,7 +54,9 @@ namespace HelpDesk.Entities
 
 
             CreateMap<BrandCreateDto, CompanyBrandModel>();
+            CreateMap<CompanyBrandModel , BrandCreateDto>();
             CreateMap<CompanyBrandModel, BrandDto>();
+            CreateMap<BrandDto , CompanyBrandModel>();
             CreateMap<BrandUpdateDto, CompanyBrandModel>();
         }
     }
