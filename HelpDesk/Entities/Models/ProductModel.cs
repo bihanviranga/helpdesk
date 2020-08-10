@@ -8,5 +8,7 @@ namespace HelpDesk.Entities.Models
         public string ProductId { get; set; }
         public string CompanyId { get; set; }
         public string ProductName { get; set; }
+
+        public virtual CompanyModel Company { get; set; }
     }
 }

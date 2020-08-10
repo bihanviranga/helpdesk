@@ -73,6 +73,47 @@ ALTER DATABASE [db_helpdesk] SET QUERY_STORE = OFF
 GO
 USE [db_helpdesk]
 GO
+
+/****** Object:  Table [dbo].[Tkt_Company]    Script Date: 6/8/2020 11:42:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Tkt_Company]
+(
+	[CompanyID] [char](36) NOT NULL,
+	[CompanyName] [nvarchar](max) NOT NULL,
+	CONSTRAINT [PK_Tkt_Company] PRIMARY KEY CLUSTERED
+(
+	[CompanyID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[Tkt_user]    Script Date: 6/8/2020 11:42:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Tkt_User]
+(
+	[CompanyID] [char](36) NOT NULL,
+	[UserName] [nvarchar](20) NOT NULL,
+	[UserType] [nvarchar](20) NOT NULL,
+	[FullName] [nvarchar](max) NOT NULL,
+	[Email] [nvarchar](max) NOT NULL,
+	[PasswordHash] [nvarchar](max) NOT NULL,
+	[Phone] [char](20) NULL,
+	[UserImage] [nvarchar](max) NULL,
+	[UserRole] [nvarchar](20) NOT NULL,
+	CONSTRAINT [FK_User_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
+	CONSTRAINT [PK_Tkt_userz] PRIMARY KEY CLUSTERED
+(
+	[UserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
 /****** Object:  Table [dbo].[Tkt_Article]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -90,12 +131,14 @@ CREATE TABLE [dbo].[Tkt_Article]
 	[ArticleContent] [nvarchar](max) NOT NULL,
 	[LastEditedDate] [datetime] NULL,
 	[LastEditedBy] [nvarchar](20) NULL,
+	CONSTRAINT [FK_Article_CreatedBy] FOREIGN KEY (CreatedBy) REFERENCES [Tkt_User](UserName),
 	CONSTRAINT [PK_Tkt_Article] PRIMARY KEY CLUSTERED
 (
 	[ArticleID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_Category]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -106,6 +149,7 @@ CREATE TABLE [dbo].[Tkt_Category]
 	[CategoryID] [nvarchar](20) NOT NULL,
 	[CompanyID] [char](36) NOT NULL,
 	[CategoryName] [nvarchar](max) NOT NULL,
+	CONSTRAINT [FK_Category_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
 	CONSTRAINT [PK_Tkt_Category] PRIMARY KEY CLUSTERED
 (
 	[CategoryID] ASC,
@@ -113,21 +157,7 @@ CREATE TABLE [dbo].[Tkt_Category]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tkt_Company]    Script Date: 6/8/2020 11:42:44 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Tkt_Company]
-(
-	[CompanyID] [char](36) NOT NULL,
-	[CompanyName] [nvarchar](max) NOT NULL,
-	CONSTRAINT [PK_Tkt_Company] PRIMARY KEY CLUSTERED
-(
-	[CompanyID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+
 /****** Object:  Table [dbo].[Tkt_CompanyBrand]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -138,6 +168,7 @@ CREATE TABLE [dbo].[Tkt_CompanyBrand]
 	[BrandID] [nvarchar](20) NOT NULL,
 	[CompanyID] [char](36) NOT NULL,
 	[BrandName] [nvarchar](max) NOT NULL,
+	CONSTRAINT [FK_Brand_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
 	CONSTRAINT [PK_Tkt_CompanyBrand] PRIMARY KEY CLUSTERED
 (
 	[BrandID] ASC,
@@ -145,6 +176,45 @@ CREATE TABLE [dbo].[Tkt_CompanyBrand]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+/****** Object:  Table [dbo].[Tkt_TicketMaster]    Script Date: 6/8/2020 11:42:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Tkt_TicketMaster]
+(
+	[TicketID] [char](36) NOT NULL,
+	[TicketCode] [char](20) NULL,
+	[CompanyID] [char](36) NOT NULL,
+	[ProductID] [nvarchar](50) NOT NULL,
+	[ModuleID] [nvarchar](20) NOT NULL,
+	[BrandID] [nvarchar](20) NULL,
+	[CategoryID] [nvarchar](20) NOT NULL,
+	[TktSubject] [nvarchar](max) NOT NULL,
+	[TktContent] [nvarchar](max) NOT NULL,
+	[TktStatus] [nvarchar](20) NULL,
+	[TktPriority] [nvarchar](20) NULL,
+	[TktCreatedBy] [nvarchar](20) NOT NULL,
+	[TktCreatedByCompany] [char](36) NOT NULL,
+	[TktAssignedTo] [nvarchar](20) NULL,
+	[TktCreatedDate] [datetime] NOT NULL,
+	[TktClosedDate] [datetime] NULL,
+	[TktReopenedDate] [datetime] NULL,
+	[TktFirstResponseDate] [datetime] NULL,
+	[TktAttachment] [nvarchar](max) NULL,
+	[TktRating] [nvarchar](20) NULL,
+	CONSTRAINT [FK_Ticket_CreatedBy] FOREIGN KEY (TktCreatedBy) REFERENCES [Tkt_User](UserName),
+	CONSTRAINT [FK_Ticket_AssignedTo] FOREIGN KEY (TktAssignedTo) REFERENCES [Tkt_User](UserName),
+	CONSTRAINT [FK_Ticket_CreatedByCompany] FOREIGN KEY (TktCreatedByCompany) REFERENCES [Tkt_Company](CompanyID),
+	CONSTRAINT [FK_Ticket_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
+	CONSTRAINT [PK_Tkt_TicketMaster] PRIMARY KEY CLUSTERED
+(
+	[TicketID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
 /****** Object:  Table [dbo].[Tkt_Conversation]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -158,6 +228,8 @@ CREATE TABLE [dbo].[Tkt_Conversation]
 	[CvSenderType] [nvarchar](20) NOT NULL,
 	[CvSendDate] [datetime] NULL,
 	[CvContent] [nvarchar](max) NOT NULL,
+	CONSTRAINT [FK_Conversation_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID),
+	CONSTRAINT [FK_Conversation_Sender] FOREIGN KEY (CvSender) REFERENCES [Tkt_User](UserName),
 	CONSTRAINT [PK_Tkt_Conversation] PRIMARY KEY CLUSTERED
 (
 	[CvID] ASC,
@@ -165,6 +237,7 @@ CREATE TABLE [dbo].[Tkt_Conversation]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_Module]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -175,6 +248,7 @@ CREATE TABLE [dbo].[Tkt_Module]
 	[ModuleID] [nvarchar](20) NOT NULL,
 	[CompanyID] [char](36) NOT NULL,
 	[ModuleName] [nvarchar](max) NOT NULL,
+	CONSTRAINT [FK_Module_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
 	CONSTRAINT [PK_Tkt_Module] PRIMARY KEY CLUSTERED
 (
 	[ModuleID] ASC,
@@ -182,6 +256,7 @@ CREATE TABLE [dbo].[Tkt_Module]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_Notification]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -196,6 +271,8 @@ CREATE TABLE [dbo].[Tkt_Notification]
 	[NotifRead] [bit] NOT NULL,
 	[NotifURL] [nvarchar](max) NULL,
 	[NotifDate] [datetime] NOT NULL,
+	CONSTRAINT [FK_Notification_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID),
+	CONSTRAINT [FK_Notification_User] FOREIGN KEY (NotifUser) REFERENCES [Tkt_User](UserName),
 	CONSTRAINT [PK_Tkt_Notification] PRIMARY KEY CLUSTERED
 (
 	[NotifID] ASC,
@@ -203,6 +280,7 @@ CREATE TABLE [dbo].[Tkt_Notification]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_Product]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -213,6 +291,7 @@ CREATE TABLE [dbo].[Tkt_Product]
 	[ProductID] [nvarchar](50) NOT NULL,
 	[CompanyID] [char](36) NOT NULL,
 	[ProductName] [nvarchar](max) NOT NULL,
+	CONSTRAINT [FK_Product_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID),
 	CONSTRAINT [PK_Tkt_Product] PRIMARY KEY CLUSTERED
 (
 	[ProductID] ASC,
@@ -220,6 +299,7 @@ CREATE TABLE [dbo].[Tkt_Product]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_ResTemplate]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -233,43 +313,14 @@ CREATE TABLE [dbo].[Tkt_ResTemplate]
 	[TemplateContent] [nvarchar](max) NULL,
 	[TemplateAddedBy] [nvarchar](20) NOT NULL,
 	[TemplateAddedDate] [datetime] NULL,
+	CONSTRAINT [FK_ResTemplate_AddedBy] FOREIGN KEY (TemplateAddedBy) REFERENCES [Tkt_User](UserName),
 	CONSTRAINT [PK_Tkt_ResTemplate] PRIMARY KEY CLUSTERED
 (
 	[TemplateID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tkt_TicketMaster]    Script Date: 6/8/2020 11:42:44 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Tkt_TicketMaster]
-(
-	[TicketID] [char](36) NOT NULL,
-	[CompanyID] [char](36) NOT NULL,
-	[ProductID] [nvarchar](50) NOT NULL,
-	[ModuleID] [nvarchar](20) NOT NULL,
-	[BrandID] [nvarchar](20) NULL,
-	[CategoryID] [nvarchar](20) NOT NULL,
-	[TktSubject] [nvarchar](max) NOT NULL,
-	[TktContent] [nvarchar](max) NOT NULL,
-	[TktStatus] [nvarchar](20) NULL,
-	[TktPriority] [nvarchar](20) NULL,
-	[TktCreatedBy] [nvarchar](20) NOT NULL,
-	[TktAssignedTo] [nvarchar](20) NULL,
-	[TktCreatedDate] [datetime] NOT NULL,
-	[TktClosedDate] [datetime] NULL,
-	[TktReopenedDate] [datetime] NULL,
-	[TktFirstResponseDate] [datetime] NULL,
-	[TktAttachment] [nvarchar](max) NULL,
-	[TktRating] [nvarchar](20) NULL,
-	CONSTRAINT [PK_Tkt_TicketMaster] PRIMARY KEY CLUSTERED
-(
-	[TicketID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+
 /****** Object:  Table [dbo].[Tkt_TicketOperator]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -281,7 +332,10 @@ CREATE TABLE [dbo].[Tkt_TicketOperator]
 	[TicketID] [char](36) NOT NULL,
 	[Seq_no] [int] NOT NULL,
 	[AssignedDate] [datetime] NOT NULL,
-	[AssignedBy] [char](20) NULL,
+	[AssignedBy] [nvarchar](20) NULL,
+	CONSTRAINT [FK_Operator_User] FOREIGN KEY (TktOperator) REFERENCES [Tkt_User](UserName),
+	CONSTRAINT [FK_Operator_AssignedBy] FOREIGN KEY (AssignedBy) REFERENCES [Tkt_User](UserName),
+	CONSTRAINT [FK_Operator_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID),
 	CONSTRAINT [PK_Tkt_TicketOperator] PRIMARY KEY CLUSTERED
 (
 	[TktOperator] ASC,
@@ -290,6 +344,7 @@ CREATE TABLE [dbo].[Tkt_TicketOperator]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
 /****** Object:  Table [dbo].[Tkt_TicketTimeline]    Script Date: 6/8/2020 11:42:44 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -302,33 +357,12 @@ CREATE TABLE [dbo].[Tkt_TicketTimeline]
 	[TktEvent] [nvarchar](max) NOT NULL,
 	[TxnValues] [nvarchar](max) NULL,
 	[TxnUserID] [nvarchar](20) NULL,
+	CONSTRAINT [FK_Timeline_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID),
+	CONSTRAINT [FK_Timeline_User] FOREIGN KEY (TxnUserID) REFERENCES [Tkt_User](UserName),
 	CONSTRAINT [PK_Tkt_TicketTimeline_1] PRIMARY KEY CLUSTERED
 (
 	[TicketID] ASC,
 	[TxnDateTime] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Tkt_user]    Script Date: 6/8/2020 11:42:44 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Tkt_User]
-(
-	[CompanyID] [char](36) NOT NULL,
-	[UserName] [nvarchar](20) NOT NULL,
-	[UserType] [nvarchar](20) NOT NULL,
-	[FullName] [nvarchar](max) NOT NULL,
-	[Email] [nvarchar](max) NOT NULL,
-	[PasswordHash] [nvarchar](max) NOT NULL,
-	[Phone] [char](20) NULL,
-	[UserImage] [nvarchar](max) NULL,
-	[UserRole] [nvarchar](20) NOT NULL,
-	CONSTRAINT [PK_Tkt_userz] PRIMARY KEY CLUSTERED
-(
-	[CompanyID] ASC,
-	[UserName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
