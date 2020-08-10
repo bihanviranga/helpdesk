@@ -124,8 +124,6 @@ namespace HelpDesk.Controllers
                     var companyName = await _repository.Company.GetCompanyById(new Guid(_ticket.CompanyId));
                     if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
 
-
-
                     return Ok(_tkt);
                 }
             }
@@ -244,6 +242,14 @@ namespace HelpDesk.Controllers
             {
                 return Json("Somthing Went worng");
             }
+        }
+
+        [HttpGet]
+        [Route("[controller]/{id}/attachment")]
+        public async Task<IActionResult> GetTicketAttachment(Guid id)
+        {
+            var attachment = await _repository.Ticket.GetAttachment(id);
+            return new FileStreamResult(attachment, "application/octet-stream");
         }
     }
 }

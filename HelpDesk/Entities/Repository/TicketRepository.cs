@@ -29,9 +29,12 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(tkt => tkt.TktCreatedDate).ToListAsync();
         }
 
-        public Task<FileStream> GetAttachment(Guid ticketId)
+        public async Task<FileStream> GetAttachment(Guid ticketId)
         {
-            throw new NotImplementedException();
+            var ticket = await GetTicketById(ticketId);
+            var path = ticket.TktAttachment;
+            var stream = new FileStream(path, FileMode.Open);
+            return stream;
         }
 
         public async Task<IEnumerable<TicketModel>> GetTicketByCondition(Guid id, string userRole, string userName)
