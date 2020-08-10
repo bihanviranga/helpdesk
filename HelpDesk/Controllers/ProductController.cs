@@ -8,6 +8,7 @@ using System.Security.Claims;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using HelpDesk.Entities.DataTransferObjects.Product;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,40 @@ namespace HelpDesk.Controllers
             this._mapper = mapper;
             this._repository = repository;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto product)
+        {
+            try
+            {
+                if (product == null)
+                {
+                    return BadRequest("Company object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid company object");
+                }
+
+                // convert incoming Dto to actual Model instance
+                var productEntity = _mapper.Map<ProductModel>(product);
+
+                _repository.Product.CreateProduct(productEntity);
+                await _repository.Save();
+
+                // convert the model back to a DTO for output
+                var createdProduct = _mapper.Map<ProductDto>(productEntity);
+
+                return Ok(createdProduct);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
+
         [HttpGet]
         
         public async Task<IActionResult> GetProducts()
@@ -31,12 +66,30 @@ namespace HelpDesk.Controllers
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
 
+            var ProductList = new List<ProductDto>();
+
             try
             {
                 if (userRole == "Manager")
                 {
+                    var products = await _repository.Product.GetProductsByCondition(userType, userCompanyId);
+                    foreach(var product in products)
+                    {
+                        var TempProductDto = _mapper.Map<ProductDto>(product);
+                        if (product.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(product.CompanyId));
+                            if(company != null)
+                            {
+                                TempProductDto.CompanyName = company.CompanyName;
+                                ProductList.Add(TempProductDto);
+                            }
 
-                    return Ok(await _repository.Product.GetProductsByCondition(userType, userCompanyId));
+                        }
+
+
+                    }
+                    return Ok(ProductList);
                 }
                 else if (userRole == "Client")
                 {
@@ -54,13 +107,15 @@ namespace HelpDesk.Controllers
             }
         }
 
+
+
         [HttpGet]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetProductById(String id)
+        [Route("[controller]/{productId}/{companyId}")]
+        public async Task<IActionResult> GetProductById(String productId , String companyId)
         {
             try
             {
-                var product = await _repository.Product.GetProductById(id);
+                var product = await _repository.Product.GetProductById(productId, companyId);
                 
                 if (product == null)
                 {
@@ -68,9 +123,13 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(product);
+                    var resProduct = _mapper.Map<ProductDto>(product);
+                    if (product.CompanyId != null)
+                    {
+                        var company = await _repository.Company.GetCompanyById(new Guid(product.CompanyId));
+                        resProduct.CompanyName = company.CompanyName;
+                    }
+                    return Ok(resProduct);
                 }
             }
             catch (Exception)
@@ -83,6 +142,7 @@ namespace HelpDesk.Controllers
         [Route("[controller]/Company/{id}")]
         public async Task<IActionResult> GetProductsByCompanyId(String id)
         {
+            var ProductList = new List<ProductDto>();
             try
             {
                 var products = await _repository.Product.GetProductsByCompanyId(id);
@@ -93,9 +153,22 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(products);
+                    foreach (var product in products)
+                    {
+                        var TempProductDto = _mapper.Map<ProductDto>(product);
+                        if (product.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(product.CompanyId));
+                            if (company != null)
+                            {
+                                TempProductDto.CompanyName = company.CompanyName;
+                                ProductList.Add(TempProductDto);
+                            }
+
+                        }
+
+                    }
+                    return Ok(ProductList);
                 }
             }
             catch (Exception)
@@ -104,43 +177,13 @@ namespace HelpDesk.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ProductCompany([FromBody]ProductModel product)
-        {
-            try
-            {
-                if (product == null)
-                {
-                    return BadRequest("Company object is null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Invalid company object");
-                }
-
-                // convert incoming CompanyCreateDto to actual CompanyModel instance
-               // var companyEntity = _mapper.Map<CompanyModel>(company);
-
-                _repository.Product.CreateProduct(product);
-                await _repository.Save();
-
-                // convert the model back to a DTO for output
-                //var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
-
-                return Json("product has been created");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Something went wrong");
-            }
-        }
+        
 
         [HttpDelete]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteProduct(String id)
+        [Route("[controller]/{productId}/{companyId}")]
+        public async Task<IActionResult> DeleteProduct(String productId, String companyId)
         {
-            var product = await _repository.Product.GetProductById(id);
+            var product = await _repository.Product.GetProductById(productId , companyId);
             if (product == null)
             {
                 return StatusCode(500, "User Not Found");
@@ -149,7 +192,45 @@ namespace HelpDesk.Controllers
             {
                 _repository.Product.DeleteProduct(product);
                 await _repository.Save();
-                return Json("product Successfully removed");
+                 var deletedProduct = _mapper.Map<ProductDto>(product);
+                return Ok(deletedProduct);
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto product )
+        {
+            if(product != null)
+            {
+                var _product = await _repository.Product.GetProductById(product.ProductId , product.CompanyId);
+                if(_product != null)
+                {
+                    var __product = _mapper.Map<ProductModel>(product);
+                    _product.ProductName = __product.ProductName;
+                    _repository.Product.UpdateProduct(_product);
+                    await _repository.Save();
+
+                    var updatedProduct = _mapper.Map<ProductDto>(__product);
+
+                    var company = await _repository.Company.GetCompanyById(new Guid(updatedProduct.CompanyId));
+
+                    if (company != null)
+                    {
+                        updatedProduct.CompanyName = company.CompanyName;
+                       
+                    }
+
+                    return Ok(updatedProduct);
+
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+            }
+            else
+            {
+                return StatusCode(500, "Something went wrong");
             }
         }
     }

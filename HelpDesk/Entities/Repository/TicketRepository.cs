@@ -46,6 +46,11 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString()) ).FirstOrDefaultAsync();
         }
 
+        public async Task< string > GetTicketCodesByCondition(string id)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(id)).OrderByDescending(s => s.TicketCode).Select(tkt => tkt.TicketCode).FirstOrDefaultAsync();
+        }
+
         public void UpdateTicket(TicketModel ticket)
         {
             Update(ticket);

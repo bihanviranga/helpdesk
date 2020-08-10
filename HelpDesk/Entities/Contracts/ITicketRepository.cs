@@ -11,6 +11,7 @@ namespace HelpDesk.Entities.Contracts
         Task<IEnumerable<TicketModel>> GetAllTicket();
         Task<TicketModel> GetTicketById(Guid id);
         Task<IEnumerable<TicketModel>> GetTicketByCondition( Guid id , string userRole , string userName);
+        Task< string > GetTicketCodesByCondition(string id);
         void CreateTicket(TicketModel ticket);
         void UpdateTicket(TicketModel ticket);
         void DeleteTicket(TicketModel ticket);

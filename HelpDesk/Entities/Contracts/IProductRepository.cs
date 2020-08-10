@@ -9,8 +9,8 @@ namespace HelpDesk.Entities.Contracts
     public interface IProductRepository : IRepositoryBase<ProductModel>
     {
         Task<IEnumerable<ProductModel>> GetAllProducts();
-        Task<ProductModel> GetProductById(String id);
-        Task<IEnumerable<ProductModel>> GetProductsByCompanyId(String id);
+        Task<ProductModel> GetProductById(String id, string companyId);
+        Task<IEnumerable<ProductModel>> GetProductsByCompanyId(String productId );
         Task<IEnumerable<ProductModel>> GetProductsByCondition(string userType , string userCompanyId);
         void CreateProduct(ProductModel product);
         void UpdateProduct(ProductModel product);

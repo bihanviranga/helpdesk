@@ -7,7 +7,7 @@ namespace HelpDesk.Entities.Contracts
     public interface IBrandRepository : IRepositoryBase<CompanyBrandModel>
     {
         Task<IEnumerable<CompanyBrandModel>> GetAllBrands();
-        Task<CompanyBrandModel> GetBrandById(string id);
+        Task<CompanyBrandModel> GetBrandById(string id , string companyId);
         Task<IEnumerable<CompanyBrandModel>> GetBrandsByCompanyId(string id);
         Task<IEnumerable<CompanyBrandModel>> GetBrandsByCondition(string userType, string userCompanyId);
         void CreateBrand(CompanyBrandModel brand);

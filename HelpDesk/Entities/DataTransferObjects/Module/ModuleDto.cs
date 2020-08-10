@@ -5,5 +5,6 @@ namespace HelpDesk.Entities.DataTransferObjects
         public string ModuleId { get; set; }
         public string CompanyId { get; set; }
         public string ModuleName { get; set; }
+        public string CompanyName { get; set; }
     }
 }

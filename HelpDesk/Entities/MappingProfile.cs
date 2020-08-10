@@ -1,5 +1,6 @@
 using AutoMapper;
 using HelpDesk.Entities.DataTransferObjects;
+using HelpDesk.Entities.DataTransferObjects.Product;
 using HelpDesk.Entities.DataTransferObjects.ResTemplate;
 using HelpDesk.Entities.DataTransferObjects.Ticket;
 using HelpDesk.Entities.Models;
@@ -36,13 +37,26 @@ namespace HelpDesk.Entities
             CreateMap<TicketDto , TicketModel>();
 
             CreateMap<CategoryCreateDto, CategoryModel>();
+            CreateMap<CategoryModel , CategoryCreateDto>();
             CreateMap<CategoryModel, CategoryDto>();
+            CreateMap<CategoryDto , CategoryModel >();
 
             CreateMap<ModuleCreateDto, ModuleModel>();
+            CreateMap<ModuleModel , ModuleCreateDto >();
             CreateMap<ModuleModel, ModuleDto>();
+            CreateMap<ModuleDto , ModuleModel>();
+
+            CreateMap<ProductModel, ProductCreateDto>();
+            CreateMap<ProductCreateDto ,ProductModel>();
+            CreateMap<ProductDto ,ProductModel>();
+            CreateMap<ProductModel , ProductDto>();
+
+
 
             CreateMap<BrandCreateDto, CompanyBrandModel>();
+            CreateMap<CompanyBrandModel , BrandCreateDto>();
             CreateMap<CompanyBrandModel, BrandDto>();
+            CreateMap<BrandDto , CompanyBrandModel>();
             CreateMap<BrandUpdateDto, CompanyBrandModel>();
         }
     }
