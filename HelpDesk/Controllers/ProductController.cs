@@ -110,12 +110,12 @@ namespace HelpDesk.Controllers
 
 
         [HttpGet]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetProductById(String id)
+        [Route("[controller]/{productId}/{companyId}")]
+        public async Task<IActionResult> GetProductById(String productId , String companyId)
         {
             try
             {
-                var product = await _repository.Product.GetProductById(id);
+                var product = await _repository.Product.GetProductById(productId, companyId);
                 
                 if (product == null)
                 {
@@ -180,10 +180,10 @@ namespace HelpDesk.Controllers
         
 
         [HttpDelete]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteProduct(String id)
+        [Route("[controller]/{productId}/{companyId}")]
+        public async Task<IActionResult> DeleteProduct(String productId, String companyId)
         {
-            var product = await _repository.Product.GetProductById(id);
+            var product = await _repository.Product.GetProductById(productId , companyId);
             if (product == null)
             {
                 return StatusCode(500, "User Not Found");
@@ -198,19 +198,22 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductModel product )
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto product )
         {
             if(product != null)
             {
-                var _product = await _repository.Product.GetProductById(product.ProductId);
+                var _product = await _repository.Product.GetProductById(product.ProductId , product.CompanyId);
                 if(_product != null)
                 {
-                     _repository.Product.UpdateProduct(_product);
+                    var __product = _mapper.Map<ProductModel>(product);
+                    _product.ProductName = __product.ProductName;
+                    _repository.Product.UpdateProduct(_product);
                     await _repository.Save();
 
-                    var updatedProduct = _mapper.Map<ProductDto>(_product);
+                    var updatedProduct = _mapper.Map<ProductDto>(__product);
 
-                    var company = await _repository.Company.GetCompanyById(new Guid(product.CompanyId));
+                    var company = await _repository.Company.GetCompanyById(new Guid(updatedProduct.CompanyId));
+
                     if (company != null)
                     {
                         updatedProduct.CompanyName = company.CompanyName;

@@ -32,12 +32,30 @@ namespace HelpDesk.Controllers
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
 
+            var BrandList = new List<BrandDto>();
+
             try
             {
                 if (userRole == "Manager")
                 {
+                    var brands = await _repository.Brand.GetBrandsByCondition(userType, userCompanyId);
+                    foreach (var brand in brands)
+                    {
+                        var TempBrandDto = _mapper.Map<BrandDto>(brand);
+                        if (brand.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(brand.CompanyId));
+                            if (company != null)
+                            {
+                                TempBrandDto.CompanyName = company.CompanyName;
+                                BrandList.Add(TempBrandDto);
+                            }
 
-                    return Ok(await _repository.Brand.GetBrandsByCondition(userType, userCompanyId));
+                        }
+
+
+                    }
+                    return Ok(BrandList);
                 }
                 else if (userRole == "Client")
                 {
@@ -60,6 +78,7 @@ namespace HelpDesk.Controllers
 
         public async Task<IActionResult> GetBrandsByCompanyId(String id)
         {
+            var BrandList = new List<BrandDto>();
             try
             {
                 var brands = await _repository.Brand.GetBrandsByCompanyId(id);
@@ -70,9 +89,22 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(brands);
+                    foreach (var brand in brands)
+                    {
+                        var TempBrandDto = _mapper.Map<BrandDto>(brand);
+                        if (brand.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(brand.CompanyId));
+                            if (company != null)
+                            {
+                                TempBrandDto.CompanyName = company.CompanyName;
+                                BrandList.Add(TempBrandDto);
+                            }
+
+                        }
+
+                    }
+                    return Ok(BrandList);
                 }
             }
             catch (Exception)
@@ -82,22 +114,27 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}", Name = "BrandById")]
+        [Route("[controller]/{brandId}/{companyId}", Name = "BrandById")]
 
-        public async Task<IActionResult> GetBrandById(String id)
+        public async Task<IActionResult> GetBrandById(String brandId , String companyId)
         {
             try
             {
-                var brand = await _repository.Brand.GetBrandById(id);
+                var brand = await _repository.Brand.GetBrandById(brandId, companyId);
+
                 if (brand == null)
                 {
-                    return NotFound();
+                    return StatusCode(404, "Not Found");
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(brand);
+                    var resBrand = _mapper.Map<BrandDto>(brand);
+                    if (brand.CompanyId != null)
+                    {
+                        var company = await _repository.Company.GetCompanyById(new Guid(brand.CompanyId));
+                        resBrand.CompanyName = company.CompanyName;
+                    }
+                    return Ok(resBrand);
                 }
             }
             catch (Exception)
@@ -123,7 +160,7 @@ namespace HelpDesk.Controllers
                 }
 
                 // convert incoming Dto to actual Model instance
-                var brandEntity = _mapper.Map<ProductdModel>(brand);
+                var brandEntity = _mapper.Map<CompanyBrandModel>(brand);
 
                 _repository.Brand.CreateBrand(brandEntity);
                 await _repository.Save();
@@ -139,12 +176,13 @@ namespace HelpDesk.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrand(string id)
+        [HttpDelete]
+        [Route("[controller]/{productId}/{companyId}")]
+        public async Task<IActionResult> DeleteBrand(string productId , string companyId)
         {
             try
             {
-                var brand = await _repository.Brand.GetBrandById(id);
+                var brand = await _repository.Brand.GetBrandById(productId , companyId);
                 if (brand == null)
                 {
                     return NotFound();
@@ -158,6 +196,43 @@ namespace HelpDesk.Controllers
 
             }
             catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateBrand([FromBody] BrandDto brand)
+        {
+            if (brand != null)
+            {
+                var _brand = await _repository.Brand.GetBrandById(brand.BrandId, brand.CompanyId);
+                if (_brand != null)
+                {
+                    var __brand = _mapper.Map<ProductModel>(brand);
+                    _brand.BrandName = __brand.ProductName;
+                    _repository.Brand.UpdateBrand(_brand);
+                    await _repository.Save();
+
+                    var updatedBrand = _mapper.Map<BrandDto>(__brand);
+
+                    var company = await _repository.Company.GetCompanyById(new Guid(updatedBrand.CompanyId));
+
+                    if (company != null)
+                    {
+                        updatedBrand.CompanyName = company.CompanyName;
+
+                    }
+
+                    return Ok(updatedBrand);
+
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+            }
+            else
             {
                 return StatusCode(500, "Something went wrong");
             }

@@ -4,14 +4,14 @@ using HelpDesk.Entities.Models;
 
 namespace HelpDesk.Entities.Contracts
 {
-    public interface IBrandRepository : IRepositoryBase<ProductdModel>
+    public interface IBrandRepository : IRepositoryBase<CompanyBrandModel>
     {
-        Task<IEnumerable<ProductdModel>> GetAllBrands();
-        Task<ProductdModel> GetBrandById(string id);
-        Task<IEnumerable<ProductdModel>> GetBrandsByCompanyId(string id);
-        Task<IEnumerable<ProductdModel>> GetBrandsByCondition(string userType, string userCompanyId);
-        void CreateBrand(ProductdModel brand);
-        void UpdateBrand(ProductdModel brand);
-        void DeleteBrand(ProductdModel brand);
+        Task<IEnumerable<CompanyBrandModel>> GetAllBrands();
+        Task<CompanyBrandModel> GetBrandById(string id , string companyId);
+        Task<IEnumerable<CompanyBrandModel>> GetBrandsByCompanyId(string id);
+        Task<IEnumerable<CompanyBrandModel>> GetBrandsByCondition(string userType, string userCompanyId);
+        void CreateBrand(CompanyBrandModel brand);
+        void UpdateBrand(CompanyBrandModel brand);
+        void DeleteBrand(CompanyBrandModel brand);
     }
 }

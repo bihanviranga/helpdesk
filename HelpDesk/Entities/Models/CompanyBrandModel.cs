@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Entities.Models
 {
-    public partial class ProductdModel
+    public partial class CompanyBrandModel
     {
         public string BrandId { get; set; }
         public string CompanyId { get; set; }

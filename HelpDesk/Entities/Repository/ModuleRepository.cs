@@ -42,9 +42,9 @@ namespace HelpDesk.Entities.Repository
         }
 
 
-        public async Task<ModuleModel> GetModuleById(String id)
+        public async Task<ModuleModel> GetModuleById(string moduleId , string companyId)
         {
-            return await FindByCondition(m => m.ModuleId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(m => m.ModuleId.Equals(moduleId) && m.CompanyId.Equals(companyId)).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(string id)

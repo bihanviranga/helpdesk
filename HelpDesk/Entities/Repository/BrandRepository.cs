@@ -7,38 +7,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Entities.Repository
 {
-    public class BrandRepository : RepositoryBase<ProductdModel>, IBrandRepository
+    public class BrandRepository : RepositoryBase<CompanyBrandModel>, IBrandRepository
     {
         public BrandRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext)
         {
         }
 
-        public void CreateBrand(ProductdModel brand)
+        public void CreateBrand(CompanyBrandModel brand)
         {
             Create(brand);
         }
 
-        public void DeleteBrand(ProductdModel brand)
+        public void DeleteBrand(CompanyBrandModel brand)
         {
             Delete(brand);
         }
 
-        public async Task<IEnumerable<ProductdModel>> GetAllBrands()
+        public async Task<IEnumerable<CompanyBrandModel>> GetAllBrands()
         {
             return await FindAll().OrderBy(brd => brd.BrandName).ToListAsync();
         }
 
-        public async Task<ProductdModel> GetBrandById(string id)
+        public async Task<CompanyBrandModel> GetBrandById(string brandId , string companyId)
         {
-            return await FindByCondition(brd => brd.BrandId.Equals(id)).FirstOrDefaultAsync();
+            return await FindByCondition(brd => brd.BrandId.Equals(brandId) && brd.CompanyId.Equals(companyId) ).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<ProductdModel>> GetBrandsByCompanyId(string id)
+        public async Task<IEnumerable<CompanyBrandModel>> GetBrandsByCompanyId(string id)
         {
             return await FindByCondition(c => c.CompanyId.Equals(id.ToString())).ToListAsync();
         }
 
-        public async Task<IEnumerable<ProductdModel>> GetBrandsByCondition(string userType, string userCompanyId)
+        public async Task<IEnumerable<CompanyBrandModel>> GetBrandsByCondition(string userType, string userCompanyId)
         {
             if (userType == "Client")
             {
@@ -53,7 +53,7 @@ namespace HelpDesk.Entities.Repository
             return null;
         }
 
-        public void UpdateBrand(ProductdModel brand)
+        public void UpdateBrand(CompanyBrandModel brand)
         {
             Update(brand);
         }

@@ -26,9 +26,9 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(p => p.ProductId).ToListAsync();
         }
 
-        public async Task<ProductModel> GetProductById(String id)
+        public async Task<ProductModel> GetProductById(String productId , string companyId)
         {
-            return await FindByCondition(p => p.ProductId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(p => p.ProductId.Equals(productId) && p.CompanyId.Equals(companyId) ).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<ProductModel>> GetProductsByCompanyId(string id)

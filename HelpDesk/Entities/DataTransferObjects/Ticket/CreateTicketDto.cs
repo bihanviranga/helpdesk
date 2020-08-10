@@ -17,6 +17,7 @@ namespace HelpDesk.Entities.DataTransferObjects.Ticket
         public String TktContent { get; set; }
         public String TktStatus { get; set; }
         public String TktCreatedBy { get; set; }
+        public string TktCreatedByCompany { get; set; }
         public DateTime TktCreatedDate { get; set; }
         public String TktAttachment { get; set; }
 

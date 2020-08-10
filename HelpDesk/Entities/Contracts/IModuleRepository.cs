@@ -9,8 +9,8 @@ namespace HelpDesk.Entities.Contracts
     public interface IModuleRepository : IRepositoryBase<ModuleModel>
     {
         Task<IEnumerable<ModuleModel>> GetAllModules();
-        Task<ModuleModel> GetModuleById(String id);
-        Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(String id);
+        Task<ModuleModel> GetModuleById(String id, string companyId);
+        Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(String moduleId );
         Task<IEnumerable<ModuleModel>> GetModuleByCondition(string userType, string userCompanyId);
         void CreateModule(ModuleModel module);
         void DeleteModule(ModuleModel module);

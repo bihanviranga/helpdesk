@@ -5,6 +5,7 @@ namespace HelpDesk.Entities.DataTransferObjects.Ticket
     public class TicketDto
     {
         public string TicketId { get; set; }
+        public string TicketCode { get; set; }
         public string CompanyId { get; set; }
         public string CompanyName { get; set; }
         public string ProductId { get; set; }
@@ -20,6 +21,7 @@ namespace HelpDesk.Entities.DataTransferObjects.Ticket
         public string TktStatus { get; set; }
         public string TktPriority { get; set; }
         public string TktCreatedBy { get; set; }
+        public string TktCreatedByCompany { get; set; }
         public string TktAssignedTo { get; set; }
         public DateTime TktCreatedDate { get; set; }
         public DateTime? TktClosedDate { get; set; }

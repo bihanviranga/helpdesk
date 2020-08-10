@@ -56,17 +56,31 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}", Name = "ModuleById")]
-        public async Task<IActionResult> GetModuleById(String id)
+        [Route("[controller]/{moduleId}/{companyId}")]
+        public async Task<IActionResult> GetModuleById(String moduleId , String companyId)
         {
             try
             {
-                var module = await _repository.Module.GetModuleById(id);
-                return Ok(module);
+                var module = await _repository.Module.GetModuleById(moduleId, companyId);
+
+                if (module == null)
+                {
+                    return StatusCode(404, "Not Found");
+                }
+                else
+                {
+                    var resModule = _mapper.Map<ModuleDto>(module);
+                    if (module.CompanyId != null)
+                    {
+                        var company = await _repository.Company.GetCompanyById(new Guid(module.CompanyId));
+                        resModule.CompanyName = company.CompanyName;
+                    }
+                    return Ok(resModule);
+                }
             }
             catch (Exception)
             {
-                return StatusCode(500, "Something went worng !!");
+                return StatusCode(500, "Something went wrong");
             }
         }
 
@@ -79,12 +93,30 @@ namespace HelpDesk.Controllers
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
 
+            var ModuleList = new List<ModuleDto>();
+
             try
             {
                 if (userRole == "Manager")
                 {
+                    var modules = await _repository.Module.GetModuleByCondition(userType, userCompanyId);
+                    foreach (var module in modules)
+                    {
+                        var TempModuleDto = _mapper.Map<ModuleDto>(module);
+                        if (module.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(module.CompanyId));
+                            if (company != null)
+                            {
+                                TempModuleDto.CompanyName = company.CompanyName;
+                                ModuleList.Add(TempModuleDto);
+                            }
 
-                    return Ok(await _repository.Module.GetModuleByCondition(userType, userCompanyId));
+                        }
+
+
+                    }
+                    return Ok(ModuleList);
                 }
                 else if (userRole == "Client")
                 {
@@ -106,6 +138,7 @@ namespace HelpDesk.Controllers
         [Route("[controller]/Company/{id}")]
         public async Task<IActionResult> GetModulesByCompanyId(String id)
         {
+            var ModuleList = new List<ModuleDto>();
             try
             {
                 var modules = await _repository.Module.GetModulesByCompanyId(id);
@@ -116,9 +149,22 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(modules);
+                    foreach (var module in modules)
+                    {
+                        var TempModuleDto = _mapper.Map<ModuleDto>(module);
+                        if (module.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(module.CompanyId));
+                            if (company != null)
+                            {
+                                TempModuleDto.CompanyName = company.CompanyName;
+                                ModuleList.Add(TempModuleDto);
+                            }
+
+                        }
+
+                    }
+                    return Ok(ModuleList);
                 }
             }
             catch (Exception)
@@ -130,20 +176,59 @@ namespace HelpDesk.Controllers
 
 
         [HttpDelete]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteModule(String id)
+        [Route("[controller]/{moduleId}/{companyId}")]
+        public async Task<IActionResult> DeleteModule(String moduleId , String companyId)
         {
-            var module = await _repository.Module.GetModuleById(id);
-            if (module != null)
+            var module = await _repository.Module.GetModuleById(moduleId, companyId);
+            if (module == null)
             {
-                _repository.Module.Delete(module);
-                await _repository.Save();
-                return Ok(Json("module has been deleted"));
+                return StatusCode(500, "User Not Found");
             }
             else
             {
-                return StatusCode(500, "Something went worng !!");
+                _repository.Module.DeleteModule(module);
+                await _repository.Save();
+                var deletedModule = _mapper.Map<ModuleDto>(module);
+                return Ok(deletedModule);
             }
         }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateModule([FromBody] ModuleDto module)
+        {
+            if (module != null)
+            {
+                var _module = await _repository.Module.GetModuleById(module.ModuleId, module.CompanyId);
+                if (_module != null)
+                {
+                    var __module = _mapper.Map<ModuleModel>(module);
+                    _module.ModuleName = __module.ModuleName;
+                    _repository.Module.UpdateModule(_module);
+                    await _repository.Save();
+
+                    var updatedModule = _mapper.Map<ModuleDto>(__module);
+
+                    var company = await _repository.Company.GetCompanyById(new Guid(updatedModule.CompanyId));
+
+                    if (company != null)
+                    {
+                        updatedModule.CompanyName = company.CompanyName;
+
+                    }
+
+                    return Ok(updatedModule);
+
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+            }
+            else
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
     }
 }

@@ -16,7 +16,7 @@ namespace HelpDesk.Entities
         public virtual DbSet<ArticleModel> ArticleModel { get; set; }
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
         public virtual DbSet<CompanyModel> CompanyModel { get; set; }
-        public virtual DbSet<ProductdModel> CompanyBrandModel { get; set; }
+        public virtual DbSet<CompanyBrandModel> CompanyBrandModel { get; set; }
         public virtual DbSet<ConversationModel> ConversationModel { get; set; }
         public virtual DbSet<ModuleModel> ModuleModel { get; set; }
         public virtual DbSet<NotificationModel> NotificationModel { get; set; }
@@ -110,7 +110,7 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.CompanyName).IsRequired();
             });
 
-            modelBuilder.Entity<ProductdModel>(entity =>
+            modelBuilder.Entity<CompanyBrandModel>(entity =>
             {
                 entity.HasKey(e => new { e.BrandId, e.CompanyId });
 

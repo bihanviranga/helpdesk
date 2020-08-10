@@ -30,9 +30,9 @@ namespace HelpDesk.Entities.Repository
             return await FindAll().OrderBy(c => c.CategoryId).ToListAsync();
         }
 
-        public async Task<CategoryModel> GetCategoryById(String id)
+        public async Task<CategoryModel> GetCategoryById(String catergoryId , string companyId)
         {
-            return await FindByCondition(c => c.CategoryId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(c => c.CategoryId.Equals(catergoryId) && c.CompanyId.Equals(companyId)).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<CategoryModel>> GetCategoriesByCompanyId(string id)
