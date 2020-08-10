@@ -123,7 +123,7 @@ namespace HelpDesk.Controllers
                 }
 
                 // convert incoming Dto to actual Model instance
-                var brandEntity = _mapper.Map<CompanyBrandModel>(brand);
+                var brandEntity = _mapper.Map<ProductdModel>(brand);
 
                 _repository.Brand.CreateBrand(brandEntity);
                 await _repository.Save();

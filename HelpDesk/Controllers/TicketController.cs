@@ -43,16 +43,17 @@ namespace HelpDesk.Controllers
                     {
                         var _tkt = _mapper.Map<TicketDto>(tkt);
                         var c = await _repository.Category.GetCategoryById(tkt.CategoryId);
-                        _tkt.CategoryName = c.CategoryName;
-
+                        if(c != null) _tkt.CategoryName = c.CategoryName;
+                         
                         var p = await _repository.Product.GetProductById(tkt.ProductId);
-                        _tkt.ProductName = p.ProductName;
-
+                        if(p != null) _tkt.ProductName = p.ProductName;
+                         
                         var m = await _repository.Module.GetModuleById(tkt.ModuleId);
-                        _tkt.ModuleName = m.ModuleName;
-
+                        if (m != null)  _tkt.ModuleName = m.ModuleName;
+                         
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
-                        _tkt.CompanyName = companyName.CompanyName;
+                        if(companyName != null) _tkt.CompanyName = companyName.CompanyName;
+                        
 
                         ticketList.Add(_tkt);
                     }
@@ -64,17 +65,19 @@ namespace HelpDesk.Controllers
                     foreach(TicketModel tkt in tkts)
                     {
                         var _tkt = _mapper.Map<TicketDto>(tkt);
+
                         var c = await _repository.Category.GetCategoryById(tkt.CategoryId);
-                        _tkt.CategoryName = c.CategoryName;
-
+                        if (c != null) _tkt.CategoryName = c.CategoryName;
+                        
                         var p = await _repository.Product.GetProductById(tkt.ProductId);
-                        _tkt.ProductName = p.ProductName;
-
+                        if (p != null) _tkt.ProductName = p.ProductName;
+                         
                         var m = await _repository.Module.GetModuleById(tkt.ModuleId);
-                        _tkt.ModuleName = m.ModuleName;
-
+                        if (m != null) _tkt.ModuleName = m.ModuleName;
+                         
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
-                        _tkt.CompanyName = companyName.CompanyName;
+                        if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
+                         
 
                         ticketList.Add(_tkt);
                     }
@@ -110,16 +113,16 @@ namespace HelpDesk.Controllers
                     var _tkt = _mapper.Map<TicketDto>(_ticket);
 
                     var c = await _repository.Category.GetCategoryById(_ticket.CategoryId);
-                    _tkt.CategoryName = c.CategoryName;
+                    if (c != null )_tkt.CategoryName = c.CategoryName;
 
                     var p = await _repository.Product.GetProductById(_ticket.ProductId);
-                    _tkt.ProductName = p.ProductName;
+                    if (p != null)  _tkt.ProductName = p.ProductName;
 
                     var m = await _repository.Module.GetModuleById(_ticket.ModuleId);
-                    _tkt.ModuleName = m.ModuleName;
+                    if (m != null) _tkt.ModuleName = m.ModuleName;
 
                     var companyName = await _repository.Company.GetCompanyById(new Guid(_ticket.CompanyId));
-                    _tkt.CompanyName = companyName.CompanyName;
+                    if (companyName != null)  _tkt.CompanyName = companyName.CompanyName;
 
                    
 
@@ -188,16 +191,16 @@ namespace HelpDesk.Controllers
                 var updatedTkt = _mapper.Map<TicketDto>(tkt);
 
                 var c = await _repository.Category.GetCategoryById(updatedTkt.CategoryId);
-                updatedTkt.CategoryName = c.CategoryName;
+                if (c != null)  updatedTkt.CategoryName = c.CategoryName;
 
                 var p = await _repository.Product.GetProductById(updatedTkt.ProductId);
-                updatedTkt.ProductName = p.ProductName;
+                if (p != null) updatedTkt.ProductName = p.ProductName;
 
                 var m = await _repository.Module.GetModuleById(updatedTkt.ModuleId);
-                updatedTkt.ModuleName = m.ModuleName;
+                if (m != null)  updatedTkt.ModuleName = m.ModuleName;
 
                 var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
-                updatedTkt.CompanyName = companyName.CompanyName;
+                if (companyName != null)  updatedTkt.CompanyName = companyName.CompanyName;
 
                 return Ok(updatedTkt);
 
