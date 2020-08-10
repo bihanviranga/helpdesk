@@ -121,3 +121,5 @@ src/.vs/config/applicationhost.config
 # Developer-specific configuration
 *.Development.json
 
+# Local storage for ticket attachments
+AttachmentStorage/

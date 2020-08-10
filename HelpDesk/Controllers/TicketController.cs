@@ -23,8 +23,8 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-      
-        public async Task<IActionResult> GetTickets( )
+
+        public async Task<IActionResult> GetTickets()
         {
             var ticketList = new List<TicketDto>();
 
@@ -35,49 +35,49 @@ namespace HelpDesk.Controllers
 
             try
             {
-                if ( userType == "HelpDesk") 
+                if (userType == "HelpDesk")
                 {
                     var tkts = await _repository.Ticket.GetAllTicket();
 
                     foreach (TicketModel tkt in tkts)
                     {
                         var _tkt = _mapper.Map<TicketDto>(tkt);
-                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId , tkt.CompanyId);
-                        if(c != null) _tkt.CategoryName = c.CategoryName;
-                         
-                        var p = await _repository.Product.GetProductById(tkt.ProductId , tkt.CompanyId);
-                        if(p != null) _tkt.ProductName = p.ProductName;
-                         
-                        var m = await _repository.Module.GetModuleById(tkt.ModuleId , tkt.CompanyId);
-                        if (m != null)  _tkt.ModuleName = m.ModuleName;
-                         
+                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId, tkt.CompanyId);
+                        if (c != null) _tkt.CategoryName = c.CategoryName;
+
+                        var p = await _repository.Product.GetProductById(tkt.ProductId, tkt.CompanyId);
+                        if (p != null) _tkt.ProductName = p.ProductName;
+
+                        var m = await _repository.Module.GetModuleById(tkt.ModuleId, tkt.CompanyId);
+                        if (m != null) _tkt.ModuleName = m.ModuleName;
+
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
-                        if(companyName != null) _tkt.CompanyName = companyName.CompanyName;
-                        
+                        if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
+
 
                         ticketList.Add(_tkt);
                     }
                     return Ok(ticketList);
                 }
-                else if(userType == "Client")
+                else if (userType == "Client")
                 {
                     var tkts = await _repository.Ticket.GetTicketByCondition(new Guid(userCompanyId), userRole, userName);
-                    foreach(TicketModel tkt in tkts)
+                    foreach (TicketModel tkt in tkts)
                     {
                         var _tkt = _mapper.Map<TicketDto>(tkt);
 
-                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId , tkt.CompanyId);
+                        var c = await _repository.Category.GetCategoryById(tkt.CategoryId, tkt.CompanyId);
                         if (c != null) _tkt.CategoryName = c.CategoryName;
-                        
-                        var p = await _repository.Product.GetProductById(tkt.ProductId , tkt.CompanyId);
+
+                        var p = await _repository.Product.GetProductById(tkt.ProductId, tkt.CompanyId);
                         if (p != null) _tkt.ProductName = p.ProductName;
-                         
-                        var m = await _repository.Module.GetModuleById(tkt.ModuleId , tkt.CompanyId);
+
+                        var m = await _repository.Module.GetModuleById(tkt.ModuleId, tkt.CompanyId);
                         if (m != null) _tkt.ModuleName = m.ModuleName;
-                         
+
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
                         if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
-                         
+
 
                         ticketList.Add(_tkt);
                     }
@@ -92,13 +92,13 @@ namespace HelpDesk.Controllers
             }
         }
 
-       
+
 
         [HttpGet]
         [Route("[controller]/{id}", Name = "TicketById")]
         public async Task<IActionResult> GetTicketById(string id)
         {
-            
+
 
             try
             {
@@ -112,19 +112,19 @@ namespace HelpDesk.Controllers
                 {
                     var _tkt = _mapper.Map<TicketDto>(_ticket);
 
-                    var c = await _repository.Category.GetCategoryById(_ticket.CategoryId , _tkt.CompanyId);
-                    if (c != null )_tkt.CategoryName = c.CategoryName;
+                    var c = await _repository.Category.GetCategoryById(_ticket.CategoryId, _tkt.CompanyId);
+                    if (c != null) _tkt.CategoryName = c.CategoryName;
 
-                    var p = await _repository.Product.GetProductById(_ticket.ProductId , _ticket.CompanyId);
-                    if (p != null)  _tkt.ProductName = p.ProductName;
+                    var p = await _repository.Product.GetProductById(_ticket.ProductId, _ticket.CompanyId);
+                    if (p != null) _tkt.ProductName = p.ProductName;
 
-                    var m = await _repository.Module.GetModuleById(_ticket.ModuleId , _ticket.CompanyId);
+                    var m = await _repository.Module.GetModuleById(_ticket.ModuleId, _ticket.CompanyId);
                     if (m != null) _tkt.ModuleName = m.ModuleName;
 
                     var companyName = await _repository.Company.GetCompanyById(new Guid(_ticket.CompanyId));
-                    if (companyName != null)  _tkt.CompanyName = companyName.CompanyName;
+                    if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
 
-                   
+
 
                     return Ok(_tkt);
                 }
@@ -136,7 +136,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTicket([FromBody] CreateTicketDto CreateTicket)
+        public async Task<IActionResult> CreateTicket([FromForm] CreateTicketDto CreateTicket)
         {
             try
             {
@@ -144,30 +144,45 @@ namespace HelpDesk.Controllers
                 {
                     return BadRequest("Ticket object is null");
                 }
-                
+
                 // convert incoming Dto to actual Model instance
                 var createTicketEntity = _mapper.Map<TicketModel>(CreateTicket);
 
                 // Algorithm for Tkt code
 
-                    //find comany of own  tkt
-                    var company = await _repository.Company.GetCompanyById(new Guid(CreateTicket.CompanyId));
-                    var TempCompanyName = company.CompanyName.Replace(" ","_");
+                //find comany of own  tkt
+                var company = await _repository.Company.GetCompanyById(new Guid(CreateTicket.CompanyId));
+                var TempCompanyName = company.CompanyName.Replace(" ", "_");
 
-                    var LastTktCode = await _repository.Ticket.GetTicketCodesByCondition(company.CompanyId);
+                var LastTktCode = await _repository.Ticket.GetTicketCodesByCondition(company.CompanyId);
 
-                    if (LastTktCode == null)
-                    {
-                        createTicketEntity.TicketCode = TempCompanyName + 001;
-                    }
-                    else
-                    {
-                        int getFinalTktCodeNum = Convert.ToInt32(LastTktCode.Replace(TempCompanyName, ""));
-                        createTicketEntity.TicketCode = TempCompanyName + (getFinalTktCodeNum + 1);
-                    }
-                    
+                if (LastTktCode == null)
+                {
+                    createTicketEntity.TicketCode = TempCompanyName + 001;
+                }
+                else
+                {
+                    int getFinalTktCodeNum = Convert.ToInt32(LastTktCode.Replace(TempCompanyName, ""));
+                    createTicketEntity.TicketCode = TempCompanyName + (getFinalTktCodeNum + 1);
+                }
+
 
                 _repository.Ticket.CreateTicket(createTicketEntity);
+
+                if (CreateTicket.TktAttachment != null)
+                {
+                    // file exists
+                    // PLAN:
+                    // save file. return path. set path in TicketModel.TktAttachment.
+                    var path = await _repository.Ticket.UploadAttachment(
+                        CreateTicket.TktAttachment,
+                        createTicketEntity.TicketId);
+                    if (path != null) // save succesfull
+                    {
+                        createTicketEntity.TktAttachment = path;
+                    }
+                }
+
                 await _repository.Save();
 
                 // convert the model back to a DTO for output
@@ -199,7 +214,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTicket([FromBody]TicketDto _tkt)
+        public async Task<IActionResult> UpdateTicket([FromBody] TicketDto _tkt)
         {
             try
             {
@@ -209,17 +224,17 @@ namespace HelpDesk.Controllers
 
                 var updatedTkt = _mapper.Map<TicketDto>(tkt);
 
-                var c = await _repository.Category.GetCategoryById(updatedTkt.CategoryId , updatedTkt.CompanyId);
-                if (c != null)  updatedTkt.CategoryName = c.CategoryName;
+                var c = await _repository.Category.GetCategoryById(updatedTkt.CategoryId, updatedTkt.CompanyId);
+                if (c != null) updatedTkt.CategoryName = c.CategoryName;
 
-                var p = await _repository.Product.GetProductById(updatedTkt.ProductId , updatedTkt.CompanyId);
+                var p = await _repository.Product.GetProductById(updatedTkt.ProductId, updatedTkt.CompanyId);
                 if (p != null) updatedTkt.ProductName = p.ProductName;
 
-                var m = await _repository.Module.GetModuleById(updatedTkt.ModuleId , updatedTkt.CompanyId);
-                if (m != null)  updatedTkt.ModuleName = m.ModuleName;
+                var m = await _repository.Module.GetModuleById(updatedTkt.ModuleId, updatedTkt.CompanyId);
+                if (m != null) updatedTkt.ModuleName = m.ModuleName;
 
                 var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
-                if (companyName != null)  updatedTkt.CompanyName = companyName.CompanyName;
+                if (companyName != null) updatedTkt.CompanyName = companyName.CompanyName;
 
                 return Ok(updatedTkt);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace HelpDesk.Entities.DataTransferObjects.Ticket
 {
@@ -19,7 +20,7 @@ namespace HelpDesk.Entities.DataTransferObjects.Ticket
         public String TktCreatedBy { get; set; }
         public string TktCreatedByCompany { get; set; }
         public DateTime TktCreatedDate { get; set; }
-        public String TktAttachment { get; set; }
+        public IFormFile TktAttachment { get; set; }
 
     }
 }
