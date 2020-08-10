@@ -9,6 +9,10 @@ namespace HelpDesk.Entities.Models
         public string TicketId { get; set; }
         public int SeqNo { get; set; }
         public DateTime AssignedDate { get; set; }
-        public DateTime AssignedBy { get; set; }
+        public string AssignedBy { get; set; }
+
+        public virtual UserModel AssignedByNavigation { get; set; }
+        public virtual TicketModel Ticket { get; set; }
+        public virtual UserModel TktOperatorNavigation { get; set; }
     }
 }

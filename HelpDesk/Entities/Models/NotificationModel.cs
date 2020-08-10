@@ -12,5 +12,8 @@ namespace HelpDesk.Entities.Models
         public bool NotifRead { get; set; }
         public string NotifUrl { get; set; }
         public DateTime NotifDate { get; set; }
+
+        public virtual UserModel NotifUserNavigation { get; set; }
+        public virtual TicketModel Ticket { get; set; }
     }
 }
