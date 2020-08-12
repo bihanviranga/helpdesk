@@ -48,6 +48,11 @@ namespace HelpDesk.Controllers
 
                 // convert the model back to a DTO for output
                 var createdProduct = _mapper.Map<ProductDto>(productEntity);
+                if(createdProduct.CompanyName == null)
+                {
+                    var company = await _repository.Company.GetCompanyById(new Guid(createdProduct.CompanyId));
+                    createdProduct.CompanyName = company.CompanyName;
+                }
 
                 return Ok(createdProduct);
             }
