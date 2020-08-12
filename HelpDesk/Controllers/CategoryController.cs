@@ -4,13 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HelpDesk.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly IRepositoryWrapper _repository;
@@ -22,19 +25,39 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCaregories()
+        
+        public async Task<IActionResult> GetCategories()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
 
+            var CategoryList = new List<CategoryDto>();
+
             try
             {
-                if (userRole == "Manager") {
-                   
-                    return Ok(await _repository.Category.GetCategoriesByCondition(userType , userCompanyId));
+                if (userRole == "Manager")
+                {
+                    var categories = await _repository.Category.GetCategoriesByCondition(userType, userCompanyId);
+                    foreach (var category in categories)
+                    {
+                        var TempCategoryDto = _mapper.Map<CategoryDto>(category);
+                        if (category.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(category.CompanyId));
+                            if (company != null)
+                            {
+                                TempCategoryDto.CompanyName = company.CompanyName;
+                                CategoryList.Add(TempCategoryDto);
+                            }
+
+                        }
+
+
+                    }
+                    return Ok(CategoryList);
                 }
-                else if(userRole == "Client")
+                else if (userRole == "Client")
                 {
                     return StatusCode(401, "401 Unauthorized  Access");
                 }
@@ -42,7 +65,7 @@ namespace HelpDesk.Controllers
                 {
                     return StatusCode(500, "Something went wrong");
                 }
-                    
+
             }
             catch (Exception)
             {
@@ -52,8 +75,10 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/company/{id}")]
+       
         public async Task<IActionResult> GetCategoriesByCompanyId(String id)
         {
+            var CategoryList = new List<CategoryDto>();
             try
             {
                 var categories = await _repository.Category.GetCategoriesByCompanyId(id);
@@ -64,9 +89,22 @@ namespace HelpDesk.Controllers
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(categories);
+                    foreach (var category in categories)
+                    {
+                        var TempCategoryDto = _mapper.Map<CategoryDto>(category);
+                        if (category.CompanyId != null)
+                        {
+                            var company = await _repository.Company.GetCompanyById(new Guid(category.CompanyId));
+                            if (company != null)
+                            {
+                                TempCategoryDto.CompanyName = company.CompanyName;
+                                CategoryList.Add(TempCategoryDto);
+                            }
+
+                        }
+
+                    }
+                    return Ok(CategoryList);
                 }
             }
             catch (Exception)
@@ -76,21 +114,27 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> GetCategoryById(String id)
+        [Route("[controller]/{categoryId}/{companyId}")]
+        
+        public async Task<IActionResult> GetCategoryById(String categoryId, String companyId)
         {
             try
             {
-                var category = await _repository.Category.GetCategoryById(id);
+                var category = await _repository.Category.GetCategoryById(categoryId, companyId);
+
                 if (category == null)
                 {
-                    return NotFound();
+                    return StatusCode(404, "Not Found");
                 }
                 else
                 {
-                    //mappers not use -> ** should dev in future
-                    //var productResult = _mapper.Map<ProductDto>(product);
-                    return Ok(category);
+                    var resCategory = _mapper.Map<CategoryDto>(category);
+                    if (category.CompanyId != null)
+                    {
+                        var company = await _repository.Company.GetCompanyById(new Guid(category.CompanyId));
+                        resCategory.CompanyName = company.CompanyName;
+                    }
+                    return Ok(resCategory);
                 }
             }
             catch (Exception)
@@ -100,7 +144,8 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCAtegory([FromBody]CategoryModel category)
+        
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto category)
         {
             try
             {
@@ -114,16 +159,16 @@ namespace HelpDesk.Controllers
                     return BadRequest("Invalid company object");
                 }
 
-                // convert incoming CompanyCreateDto to actual CompanyModel instance
-                // var companyEntity = _mapper.Map<CompanyModel>(company);
+                // convert incoming Dto to actual Model instance
+                var categoryEntity = _mapper.Map<CategoryModel>(category);
 
-                _repository.Category.CreateCategory(category);
+                _repository.Category.CreateCategory(categoryEntity);
                 await _repository.Save();
 
                 // convert the model back to a DTO for output
-                //var createdCompany = _mapper.Map<CompanyDto>(companyEntity);
+                var createdCategory = _mapper.Map<CategoryDto>(categoryEntity);
 
-                return Json("category has been created");
+                return Ok(createdCategory);
             }
             catch (Exception)
             {
@@ -132,10 +177,11 @@ namespace HelpDesk.Controllers
         }
 
         [HttpDelete]
-        [Route("[controller]/{id}")]
-        public async Task<IActionResult> DeleteCategory(String id)
+        [Route("[controller]/{categoryId}/{companyId}")]
+        
+        public async Task<IActionResult> DeleteCategory(String categoryId  , String companyId)
         {
-            var category = await _repository.Category.GetCategoryById(id);
+            var category= await _repository.Category.GetCategoryById(categoryId, companyId);
             if (category == null)
             {
                 return StatusCode(500, "User Not Found");
@@ -144,7 +190,45 @@ namespace HelpDesk.Controllers
             {
                 _repository.Category.DeleteCategory(category);
                 await _repository.Save();
-                return Json("category successfully removed");
+                var deletedCategory = _mapper.Map<CategoryDto>(category);
+                return Ok(deletedCategory);
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateCategory([FromBody] CategoryDto category)
+        {
+            if (category != null)
+            {
+                var _category = await _repository.Category.GetCategoryById(category.CategoryId, category.CompanyId);
+                if (_category != null)
+                {
+                    var __category = _mapper.Map<CategoryModel>(category);
+                    _category.CategoryName = __category.CategoryName;
+                    _repository.Category.UpdateCategory(_category);
+                    await _repository.Save();
+
+                    var updatedCategory = _mapper.Map<CategoryDto>(__category);
+
+                    var company = await _repository.Company.GetCompanyById(new Guid(updatedCategory.CompanyId));
+
+                    if (company != null)
+                    {
+                        updatedCategory.CompanyName = company.CompanyName;
+
+                    }
+
+                    return Ok(updatedCategory);
+
+                }
+                else
+                {
+                    return StatusCode(500, "Something went wrong");
+                }
+            }
+            else
+            {
+                return StatusCode(500, "Something went wrong");
             }
         }
     }

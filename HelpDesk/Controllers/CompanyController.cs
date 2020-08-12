@@ -6,12 +6,14 @@ using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Controllers
 {
     [Route("company")]
     [ApiController]
+    [Authorize]
     public class CompanyController : ControllerBase
     {
         private readonly IRepositoryWrapper _repository;
@@ -24,8 +26,9 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
+         
         public async Task<IActionResult> GetAllCompanies()
-        {
+        { 
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;

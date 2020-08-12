@@ -1,14 +1,17 @@
 ﻿using System;
-using HelpDesk.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using HelpDesk.Entities.Models;
 
 namespace HelpDesk.Entities
 {
     public partial class HelpDeskContext : DbContext
     {
 
-        public HelpDeskContext(DbContextOptions<HelpDeskContext> options) : base(options) { }
+        public HelpDeskContext(DbContextOptions<HelpDeskContext> options)
+            : base(options)
+        {
+        }
 
         public virtual DbSet<ArticleModel> ArticleModel { get; set; }
         public virtual DbSet<CategoryModel> CategoryModel { get; set; }
@@ -52,16 +55,19 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastEditedBy)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.LastEditedBy).HasMaxLength(20);
 
                 entity.Property(e => e.LastEditedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ProductId)
-                    .IsRequired()
                     .HasColumnName("ProductID")
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.TktArticle)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Article_CreatedBy");
             });
 
             modelBuilder.Entity<CategoryModel>(entity =>
@@ -81,6 +87,12 @@ namespace HelpDesk.Entities
                     .IsFixedLength();
 
                 entity.Property(e => e.CategoryName).IsRequired();
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktCategory)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Category_Company");
             });
 
             modelBuilder.Entity<CompanyModel>(entity =>
@@ -94,6 +106,8 @@ namespace HelpDesk.Entities
                     .HasMaxLength(36)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.CompanyName).IsRequired();
             });
 
             modelBuilder.Entity<CompanyBrandModel>(entity =>
@@ -111,6 +125,14 @@ namespace HelpDesk.Entities
                     .HasMaxLength(36)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.BrandName).IsRequired();
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktCompanyBrand)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Brand_Company");
             });
 
             modelBuilder.Entity<ConversationModel>(entity =>
@@ -142,6 +164,18 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.CvSenderType)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.HasOne(d => d.CvSenderNavigation)
+                    .WithMany(p => p.TktConversation)
+                    .HasForeignKey(d => d.CvSender)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Conversation_Sender");
+
+                entity.HasOne(d => d.Ticket)
+                    .WithMany(p => p.TktConversation)
+                    .HasForeignKey(d => d.TicketId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Conversation_Ticket");
             });
 
             modelBuilder.Entity<ModuleModel>(entity =>
@@ -161,6 +195,12 @@ namespace HelpDesk.Entities
                     .IsFixedLength();
 
                 entity.Property(e => e.ModuleName).IsRequired();
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktModule)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Module_Company");
             });
 
             modelBuilder.Entity<NotificationModel>(entity =>
@@ -185,13 +225,23 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.NotifDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NotifUrl)
-                    .IsRequired()
-                    .HasColumnName("NotifURL");
+                entity.Property(e => e.NotifUrl).HasColumnName("NotifURL");
 
                 entity.Property(e => e.NotifUser)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.HasOne(d => d.NotifUserNavigation)
+                    .WithMany(p => p.TktNotification)
+                    .HasForeignKey(d => d.NotifUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Notification_User");
+
+                entity.HasOne(d => d.Ticket)
+                    .WithMany(p => p.TktNotification)
+                    .HasForeignKey(d => d.TicketId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Notification_Ticket");
             });
 
             modelBuilder.Entity<ProductModel>(entity =>
@@ -211,6 +261,12 @@ namespace HelpDesk.Entities
                     .IsFixedLength();
 
                 entity.Property(e => e.ProductName).IsRequired();
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktProduct)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Company");
             });
 
             modelBuilder.Entity<ResTemplateModel>(entity =>
@@ -227,9 +283,13 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.TemplateAddedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TemplateContent).IsRequired();
-
                 entity.Property(e => e.TemplateName).IsRequired();
+
+                entity.HasOne(d => d.TemplateAddedByNavigation)
+                    .WithMany(p => p.TktResTemplate)
+                    .HasForeignKey(d => d.TemplateAddedBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ResTemplate_AddedBy");
             });
 
             modelBuilder.Entity<TicketModel>(entity =>
@@ -270,6 +330,11 @@ namespace HelpDesk.Entities
                     .HasColumnName("ProductID")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.TicketCode)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.TktAssignedTo).HasMaxLength(20);
 
                 entity.Property(e => e.TktClosedDate).HasColumnType("datetime");
@@ -279,6 +344,12 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.TktCreatedBy)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.Property(e => e.TktCreatedByCompany)
+                    .IsRequired()
+                    .HasMaxLength(36)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
                 entity.Property(e => e.TktCreatedDate).HasColumnType("datetime");
 
@@ -293,6 +364,29 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.TktStatus).HasMaxLength(20);
 
                 entity.Property(e => e.TktSubject).IsRequired();
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktTicketMasterCompany)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ticket_Company");
+
+                entity.HasOne(d => d.TktAssignedToNavigation)
+                    .WithMany(p => p.TktTicketMasterTktAssignedToNavigation)
+                    .HasForeignKey(d => d.TktAssignedTo)
+                    .HasConstraintName("FK_Ticket_AssignedTo");
+
+                entity.HasOne(d => d.TktCreatedByNavigation)
+                    .WithMany(p => p.TktTicketMasterTktCreatedByNavigation)
+                    .HasForeignKey(d => d.TktCreatedBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ticket_CreatedBy");
+
+                entity.HasOne(d => d.TktCreatedByCompanyNavigation)
+                    .WithMany(p => p.TktTicketMasterTktCreatedByCompanyNavigation)
+                    .HasForeignKey(d => d.TktCreatedByCompany)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ticket_CreatedByCompany");
             });
 
             modelBuilder.Entity<TicketOperatorModel>(entity =>
@@ -311,9 +405,26 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.SeqNo).HasColumnName("Seq_no");
 
-                entity.Property(e => e.AssignedBy).HasColumnType("datetime");
+                entity.Property(e => e.AssignedBy).HasMaxLength(20);
 
                 entity.Property(e => e.AssignedDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AssignedByNavigation)
+                    .WithMany(p => p.TktTicketOperatorAssignedByNavigation)
+                    .HasForeignKey(d => d.AssignedBy)
+                    .HasConstraintName("FK_Operator_AssignedBy");
+
+                entity.HasOne(d => d.Ticket)
+                    .WithMany(p => p.TktTicketOperator)
+                    .HasForeignKey(d => d.TicketId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operator_Ticket");
+
+                entity.HasOne(d => d.TktOperatorNavigation)
+                    .WithMany(p => p.TktTicketOperatorTktOperatorNavigation)
+                    .HasForeignKey(d => d.TktOperator)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operator_User");
             });
 
             modelBuilder.Entity<TicketTimelineModel>(entity =>
@@ -334,27 +445,36 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.TktEvent).IsRequired();
 
                 entity.Property(e => e.TxnUserId)
-                    .IsRequired()
                     .HasColumnName("TxnUserID")
                     .HasMaxLength(20);
 
-                entity.Property(e => e.TxnValues).IsRequired();
+                entity.HasOne(d => d.Ticket)
+                    .WithMany(p => p.TktTicketTimeline)
+                    .HasForeignKey(d => d.TicketId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Timeline_Ticket");
+
+                entity.HasOne(d => d.TxnUser)
+                    .WithMany(p => p.TktTicketTimeline)
+                    .HasForeignKey(d => d.TxnUserId)
+                    .HasConstraintName("FK_Timeline_User");
             });
 
             modelBuilder.Entity<UserModel>(entity =>
             {
-                entity.HasKey(e => new { e.CompanyId, e.UserName })
+                entity.HasKey(e => e.UserName)
                     .HasName("PK_Tkt_userz");
 
                 entity.ToTable("Tkt_User");
 
+                entity.Property(e => e.UserName).HasMaxLength(20);
+
                 entity.Property(e => e.CompanyId)
+                    .IsRequired()
                     .HasColumnName("CompanyID")
                     .HasMaxLength(36)
                     .IsUnicode(false)
                     .IsFixedLength();
-
-                entity.Property(e => e.UserName).HasMaxLength(20);
 
                 entity.Property(e => e.Email).IsRequired();
 
@@ -363,7 +483,7 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.PasswordHash).IsRequired();
 
                 entity.Property(e => e.Phone)
-                    .HasMaxLength(10)
+                    .HasMaxLength(20)
                     .IsUnicode(false)
                     .IsFixedLength();
 
@@ -374,6 +494,12 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.UserType)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.TktUser)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_Company");
             });
 
             OnModelCreatingPartial(modelBuilder);

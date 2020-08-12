@@ -28,7 +28,7 @@ namespace HelpDesk.Entities.Repository
 
         public async Task<IEnumerable<ModuleModel>> GetModuleByCondition(string userType, string userCompanyId)
         {
-            if (userType == "Clien")
+            if (userType == "Client")
             {
                 return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
                        .OrderBy(cmp => cmp.CompanyId).ToListAsync();
@@ -41,9 +41,10 @@ namespace HelpDesk.Entities.Repository
             return null;
         }
 
-        public async Task<ModuleModel> GetModuleById(String id)
+
+        public async Task<ModuleModel> GetModuleById(string moduleId , string companyId)
         {
-            return await FindByCondition(m => m.ModuleId.Equals(id.ToString())).FirstOrDefaultAsync();
+            return await FindByCondition(m => m.ModuleId.Equals(moduleId) && m.CompanyId.Equals(companyId)).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<ModuleModel>> GetModulesByCompanyId(string id)
@@ -55,6 +56,7 @@ namespace HelpDesk.Entities.Repository
         {
             Update(module);
         }
+
     }
 }
 

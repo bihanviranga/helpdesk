@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace HelpDesk.Entities.Models
+namespace HelpDesk.Entities.DataTransferObjects.Product
 {
-    public partial class ProductModel
+    public class ProductCreateDto
     {
         public string ProductId { get; set; }
         public string CompanyId { get; set; }
         public string ProductName { get; set; }
-
-        public virtual CompanyModel Company { get; set; }
     }
 }

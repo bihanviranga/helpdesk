@@ -30,12 +30,12 @@ namespace HelpDesk.Entities.Repository
 
         public async Task<IEnumerable<CompanyModel>> GetCompaniesByCondition(string userType, string userCompanyId)
         {
-            if (userType == "Clien")
+            if (userType == "Client")
             {
                 return await FindByCondition(u => u.CompanyId.Equals(userCompanyId.ToString()))
                        .OrderBy(cmp => cmp.CompanyId).ToListAsync();
             }
-            else if (userType == "HelpDesk")
+            else    if (userType == "HelpDesk")
             {
                 return await FindAll().OrderBy(cmp => cmp.CompanyId).ToListAsync();
             }

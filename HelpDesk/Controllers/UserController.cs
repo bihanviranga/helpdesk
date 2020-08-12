@@ -2,9 +2,12 @@
 using HelpDesk.Entities;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
+using HelpDesk.Entities.DataTransferObjects.User;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,6 +15,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,6 +34,7 @@ namespace HelpDesk.Controllers
 
         [HttpPost]
         [Route("[controller]/Register")]
+        [Authorize]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto newUser)
         {
 
@@ -37,8 +42,22 @@ namespace HelpDesk.Controllers
             try
             {
                 // convert incoming DTO to user model
+                 
+
+
                 var userEntity = _mapper.Map<UserModel>(newUser);
-                userEntity.PasswordHash = newUser.Password;
+
+                // PasswordHasher
+                
+                string password = newUser.Password;
+
+                var data = Encoding.ASCII.GetBytes(password);
+                var sha1 = new SHA1CryptoServiceProvider();
+                var hashed = sha1.ComputeHash(data);
+                
+                userEntity.PasswordHash = System.Text.Encoding.UTF8.GetString(hashed);
+
+
 
                 // saving create user and save user into DB
                 _repository.User.CreateUser(userEntity);
@@ -56,10 +75,28 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
+        [Route("[controller]/CheckAvaibality")]
+        public async Task<IActionResult> CheckAvaibality([FromBody] CheckAvaibalityDto data)
+        {
+            return Ok(await _repository.User.CheckAvaibality(data) );
+        }
+
+        [HttpPost]
         [Route("[controller]/Login")]
+      
         public async Task<IActionResult> Login([FromBody] UserLoginDto model) //not working yet
         {
-            //user existing chechk code here ( not dev yet )
+
+            // converting password to hashcode
+
+            string password = model.Password;
+
+            var data = Encoding.ASCII.GetBytes(password);
+            var sha1 = new SHA1CryptoServiceProvider();
+            var hashed = sha1.ComputeHash(data);
+
+            model.Password = System.Text.Encoding.UTF8.GetString(hashed);
+
 
             var result = await _repository.User.LoginUser(model);
                 
@@ -92,6 +129,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Authorize]
+
         public async Task<IActionResult> GetUsers()
         {
             var usersList = new List<UserDto>();
@@ -148,12 +186,13 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{userName}")]
+        [Authorize]
         public async Task<IActionResult> GetUserByUserName(string userName)
         {
             try
             {
 
-                var user = await _repository.User.GetUserByUserName(new Guid(userName));
+                var user = await _repository.User.GetUserByUserName(userName);
                 return Ok(user);
             }
             catch (Exception)
@@ -165,9 +204,10 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{userName}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUser(string userName)
         {
-            var user = await _repository.User.GetUserByUserName(new Guid(userName));
+            var user = await _repository.User.GetUserByUserName(userName);
             if(user == null)
             {
                 return StatusCode(500, "User Not Found");
