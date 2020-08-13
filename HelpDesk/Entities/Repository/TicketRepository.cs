@@ -71,7 +71,8 @@ namespace HelpDesk.Entities.Repository
         {
             try
             {
-                string fileName = ticketId;
+                string fileExtension = attachment.FileName.Split('.', StringSplitOptions.None).Last();
+                string fileName = ticketId + "." + fileExtension;
 
                 var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "AttachmentStorage");
                 if (!Directory.Exists(storagePath))
