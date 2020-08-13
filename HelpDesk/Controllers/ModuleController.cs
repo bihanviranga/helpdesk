@@ -47,6 +47,12 @@ namespace HelpDesk.Controllers
                 // created entity --> outgoing dto
                 var createdModule = _mapper.Map<ModuleDto>(moduleEntity);
 
+                if (createdModule.CompanyName == null)
+                {
+                    var company = await _repository.Company.GetCompanyById(new Guid(createdModule.CompanyId));
+                    createdModule.CompanyName = company.CompanyName;
+                }
+
                 return CreatedAtRoute("ModuleById", new { id = moduleEntity.ModuleId }, createdModule);
             }
             catch (Exception)

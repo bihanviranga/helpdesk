@@ -168,6 +168,12 @@ namespace HelpDesk.Controllers
                 // convert the model back to a DTO for output
                 var createdCategory = _mapper.Map<CategoryDto>(categoryEntity);
 
+                if (createdCategory.CompanyName == null)
+                {
+                    var company = await _repository.Company.GetCompanyById(new Guid(createdCategory.CompanyId));
+                    createdCategory.CompanyName = company.CompanyName;
+                }
+
                 return Ok(createdCategory);
             }
             catch (Exception)
