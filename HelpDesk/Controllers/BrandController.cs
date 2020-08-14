@@ -168,6 +168,12 @@ namespace HelpDesk.Controllers
                 // convert the model back to a DTO for output
                 var createdBrand = _mapper.Map<BrandDto>(brandEntity);
 
+                if (createdBrand.CompanyName == null)
+                {
+                    var company = await _repository.Company.GetCompanyById(new Guid(createdBrand.CompanyId));
+                    createdBrand.CompanyName = company.CompanyName;
+                }
+
                 return CreatedAtRoute("CategoryById", new { id = brandEntity.BrandId }, createdBrand);
             }
             catch (Exception)
@@ -209,8 +215,8 @@ namespace HelpDesk.Controllers
                 var _brand = await _repository.Brand.GetBrandById(brand.BrandId, brand.CompanyId);
                 if (_brand != null)
                 {
-                    var __brand = _mapper.Map<ProductModel>(brand);
-                    _brand.BrandName = __brand.ProductName;
+                    var __brand = _mapper.Map<CompanyBrandModel>(brand);
+                    _brand.BrandName = __brand.BrandName;
                     _repository.Brand.UpdateBrand(_brand);
                     await _repository.Save();
 
