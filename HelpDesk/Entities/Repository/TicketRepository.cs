@@ -32,7 +32,8 @@ namespace HelpDesk.Entities.Repository
         public async Task<FileStream> GetAttachment(Guid ticketId)
         {
             var ticket = await GetTicketById(ticketId);
-            var path = ticket.TktAttachment;
+            var fileName = ticket.TktAttachment;
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "AttachmentStorage", fileName);
             var stream = new FileStream(path, FileMode.Open);
             return stream;
         }
@@ -71,7 +72,8 @@ namespace HelpDesk.Entities.Repository
         {
             try
             {
-                string fileName = ticketId;
+                string fileExtension = attachment.FileName.Split('.', StringSplitOptions.None).Last();
+                string fileName = ticketId + "." + fileExtension;
 
                 var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "AttachmentStorage");
                 if (!Directory.Exists(storagePath))
@@ -84,7 +86,7 @@ namespace HelpDesk.Entities.Repository
                 {
                     await attachment.CopyToAsync(stream);
                 }
-                return path;
+                return fileName;
             }
             catch (Exception)
             {
