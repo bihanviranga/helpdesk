@@ -205,9 +205,9 @@ CREATE TABLE [dbo].[Tkt_TicketMaster]
 	[TktAttachment] [nvarchar](max) NULL,
 	[TktRating] [nvarchar](20) NULL,
 	CONSTRAINT [FK_Ticket_CreatedBy] FOREIGN KEY (TktCreatedBy) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT [FK_Ticket_AssignedTo] FOREIGN KEY (TktAssignedTo) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT [FK_Ticket_CreatedByCompany] FOREIGN KEY (TktCreatedByCompany) REFERENCES [Tkt_Company](CompanyID) ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT [FK_Ticket_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID) ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT [FK_Ticket_AssignedTo] FOREIGN KEY (TktAssignedTo) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION,
+	CONSTRAINT [FK_Ticket_CreatedByCompany] FOREIGN KEY (TktCreatedByCompany) REFERENCES [Tkt_Company](CompanyID) ON DELETE NO ACTION,
+	CONSTRAINT [FK_Ticket_Company] FOREIGN KEY (CompanyID) REFERENCES [Tkt_Company](CompanyID) ON DELETE NO ACTION,
 	CONSTRAINT [PK_Tkt_TicketMaster] PRIMARY KEY CLUSTERED
 (
 	[TicketID] ASC
@@ -229,7 +229,7 @@ CREATE TABLE [dbo].[Tkt_Conversation]
 	[CvSendDate] [datetime] NULL,
 	[CvContent] [nvarchar](max) NOT NULL,
 	CONSTRAINT [FK_Conversation_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Conversation_Sender] FOREIGN KEY (CvSender) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT [FK_Conversation_Sender] FOREIGN KEY (CvSender) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION,
 	CONSTRAINT [PK_Tkt_Conversation] PRIMARY KEY CLUSTERED
 (
 	[CvID] ASC,
@@ -272,7 +272,7 @@ CREATE TABLE [dbo].[Tkt_Notification]
 	[NotifURL] [nvarchar](max) NULL,
 	[NotifDate] [datetime] NOT NULL,
 	CONSTRAINT [FK_Notification_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Notification_User] FOREIGN KEY (NotifUser) REFERENCES [Tkt_User](UserName) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT [FK_Notification_User] FOREIGN KEY (NotifUser) REFERENCES [Tkt_User](UserName) ON DELETE CASCADE,
 	CONSTRAINT [PK_Tkt_Notification] PRIMARY KEY CLUSTERED
 (
 	[NotifID] ASC,
@@ -334,8 +334,8 @@ CREATE TABLE [dbo].[Tkt_TicketOperator]
 	[AssignedDate] [datetime] NOT NULL,
 	[AssignedBy] [nvarchar](20) NULL,
 	CONSTRAINT [FK_Operator_User] FOREIGN KEY (TktOperator) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT [FK_Operator_AssignedBy] FOREIGN KEY (AssignedBy) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT [FK_Operator_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT [FK_Operator_AssignedBy] FOREIGN KEY (AssignedBy) REFERENCES [Tkt_User](UserName),
+	CONSTRAINT [FK_Operator_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE,
 	CONSTRAINT [PK_Tkt_TicketOperator] PRIMARY KEY CLUSTERED
 (
 	[TktOperator] ASC,
@@ -358,7 +358,7 @@ CREATE TABLE [dbo].[Tkt_TicketTimeline]
 	[TxnValues] [nvarchar](max) NULL,
 	[TxnUserID] [nvarchar](20) NULL,
 	CONSTRAINT [FK_Timeline_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Timeline_User] FOREIGN KEY (TxnUserID) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT [FK_Timeline_User] FOREIGN KEY (TxnUserID) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION,
 	CONSTRAINT [PK_Tkt_TicketTimeline_1] PRIMARY KEY CLUSTERED
 (
 	[TicketID] ASC,
