@@ -174,7 +174,7 @@ namespace HelpDesk.Controllers
                     createdBrand.CompanyName = company.CompanyName;
                 }
 
-                return CreatedAtRoute("CategoryById", new { id = brandEntity.BrandId }, createdBrand);
+                return Ok(createdBrand);
             }
             catch (Exception)
             {

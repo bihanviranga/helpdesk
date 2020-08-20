@@ -53,7 +53,7 @@ namespace HelpDesk.Controllers
                     createdModule.CompanyName = company.CompanyName;
                 }
 
-                return CreatedAtRoute("ModuleById", new { id = moduleEntity.ModuleId }, createdModule);
+                return Ok(createdModule);
             }
             catch (Exception)
             {
