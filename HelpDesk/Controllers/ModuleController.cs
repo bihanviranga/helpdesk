@@ -63,7 +63,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{moduleId}/{companyId}")]
-        public async Task<IActionResult> GetModuleById(String moduleId , String companyId)
+        public async Task<IActionResult> GetModuleById(String moduleId, String companyId)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace HelpDesk.Controllers
 
 
         [HttpGet]
-        
+
         public async Task<IActionResult> GetAllModules()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -183,19 +183,31 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{moduleId}/{companyId}")]
-        public async Task<IActionResult> DeleteModule(String moduleId , String companyId)
+        public async Task<IActionResult> DeleteModule(String moduleId, String companyId)
         {
-            var module = await _repository.Module.GetModuleById(moduleId, companyId);
-            if (module == null)
+            try
             {
-                return StatusCode(500, "User Not Found");
-            }
-            else
-            {
+                var module = await _repository.Module.GetModuleById(moduleId, companyId);
+                if (module == null)
+                {
+                    return NotFound();
+                }
+
+                // if there are tickets, don't delete the module.
+                var tickets = await _repository.Ticket.GetTicketsByModule(module);
+                if (tickets.Count() > 0)
+                {
+                    return BadRequest("This module has tickets. Delete the tickets first.");
+                }
+
                 _repository.Module.DeleteModule(module);
                 await _repository.Save();
                 var deletedModule = _mapper.Map<ModuleDto>(module);
                 return Ok(deletedModule);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
             }
         }
 

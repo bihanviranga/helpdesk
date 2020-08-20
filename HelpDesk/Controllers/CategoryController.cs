@@ -25,7 +25,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-        
+
         public async Task<IActionResult> GetCategories()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -75,7 +75,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/company/{id}")]
-       
+
         public async Task<IActionResult> GetCategoriesByCompanyId(String id)
         {
             var CategoryList = new List<CategoryDto>();
@@ -115,7 +115,7 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{categoryId}/{companyId}")]
-        
+
         public async Task<IActionResult> GetCategoryById(String categoryId, String companyId)
         {
             try
@@ -144,7 +144,7 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        
+
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto category)
         {
             try
@@ -184,20 +184,32 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{categoryId}/{companyId}")]
-        
-        public async Task<IActionResult> DeleteCategory(String categoryId  , String companyId)
+
+        public async Task<IActionResult> DeleteCategory(String categoryId, String companyId)
         {
-            var category= await _repository.Category.GetCategoryById(categoryId, companyId);
-            if (category == null)
+            try
             {
-                return StatusCode(500, "User Not Found");
-            }
-            else
-            {
+                var category = await _repository.Category.GetCategoryById(categoryId, companyId);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                // if there are tickets, don't delete the category.
+                var tickets = await _repository.Ticket.GetTicketsByCategory(category);
+                if (tickets.Count() > 0)
+                {
+                    return BadRequest("This category has tickets. Delete the tickets first.");
+                }
+
                 _repository.Category.DeleteCategory(category);
                 await _repository.Save();
                 var deletedCategory = _mapper.Map<CategoryDto>(category);
                 return Ok(deletedCategory);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
             }
         }
 
