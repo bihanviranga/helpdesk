@@ -26,9 +26,9 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-         
+
         public async Task<IActionResult> GetAllCompanies()
-        { 
+        {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -36,13 +36,13 @@ namespace HelpDesk.Controllers
             try
             {
                 return Ok(await _repository.Company.GetCompaniesByCondition(userType, userCompanyId));
-               
+
             }
             catch (Exception)
             {
                 return StatusCode(500, "Something went wrong");
             }
-           
+
         }
 
 
@@ -169,6 +169,13 @@ namespace HelpDesk.Controllers
                 if (company == null)
                 {
                     return NotFound();
+                }
+
+                // if there are tickets, don't delete the company.
+                var tickets = await _repository.Ticket.GetTicketsByCompany(company);
+                if (tickets.Count() > 0)
+                {
+                    return BadRequest("This company has tickets. Delete the tickets first.");
                 }
 
                 _repository.Company.DeleteCompany(company);

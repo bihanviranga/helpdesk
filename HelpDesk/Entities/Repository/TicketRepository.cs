@@ -93,5 +93,30 @@ namespace HelpDesk.Entities.Repository
                 return null;
             }
         }
+
+        public async Task<IEnumerable<TicketModel>> GetTicketsByBrand(CompanyBrandModel brand)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(brand.CompanyId)).Where(cpTkt => cpTkt.BrandId.Equals(brand.BrandId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<TicketModel>> GetTicketsByCompany(CompanyModel company)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(company.CompanyId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<TicketModel>> GetTicketsByCategory(CategoryModel category)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(category.CompanyId)).Where(cpTkt => cpTkt.CategoryId.Equals(category.CategoryId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<TicketModel>> GetTicketsByProduct(ProductModel product)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(product.CompanyId)).Where(cpTkt => cpTkt.ProductId.Equals(product.ProductId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<TicketModel>> GetTicketsByModule(ModuleModel module)
+        {
+            return await FindByCondition(tkt => tkt.CompanyId.Equals(module.CompanyId)).Where(cpTkt => cpTkt.ModuleId.Equals(module.ModuleId)).ToListAsync();
+        }
     }
 }
