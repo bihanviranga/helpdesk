@@ -19,7 +19,7 @@ namespace HelpDesk.Controllers
     {
         private readonly IRepositoryWrapper _repository;
         private readonly IMapper _mapper;
-        public ProductController(IRepositoryWrapper repository , IMapper mapper)
+        public ProductController(IRepositoryWrapper repository, IMapper mapper)
         {
             this._mapper = mapper;
             this._repository = repository;
@@ -48,7 +48,7 @@ namespace HelpDesk.Controllers
 
                 // convert the model back to a DTO for output
                 var createdProduct = _mapper.Map<ProductDto>(productEntity);
-                if(createdProduct.CompanyName == null)
+                if (createdProduct.CompanyName == null)
                 {
                     var company = await _repository.Company.GetCompanyById(new Guid(createdProduct.CompanyId));
                     createdProduct.CompanyName = company.CompanyName;
@@ -64,10 +64,10 @@ namespace HelpDesk.Controllers
 
 
         [HttpGet]
-        
+
         public async Task<IActionResult> GetProducts()
         {
-            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value; 
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
             var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
 
@@ -78,13 +78,13 @@ namespace HelpDesk.Controllers
                 if (userRole == "Manager")
                 {
                     var products = await _repository.Product.GetProductsByCondition(userType, userCompanyId);
-                    foreach(var product in products)
+                    foreach (var product in products)
                     {
                         var TempProductDto = _mapper.Map<ProductDto>(product);
                         if (product.CompanyId != null)
                         {
                             var company = await _repository.Company.GetCompanyById(new Guid(product.CompanyId));
-                            if(company != null)
+                            if (company != null)
                             {
                                 TempProductDto.CompanyName = company.CompanyName;
                                 ProductList.Add(TempProductDto);
@@ -116,12 +116,12 @@ namespace HelpDesk.Controllers
 
         [HttpGet]
         [Route("[controller]/{productId}/{companyId}")]
-        public async Task<IActionResult> GetProductById(String productId , String companyId)
+        public async Task<IActionResult> GetProductById(String productId, String companyId)
         {
             try
             {
                 var product = await _repository.Product.GetProductById(productId, companyId);
-                
+
                 if (product == null)
                 {
                     return StatusCode(404, "Not Found");
@@ -151,7 +151,7 @@ namespace HelpDesk.Controllers
             try
             {
                 var products = await _repository.Product.GetProductsByCompanyId(id);
-                
+
                 if (products == null)
                 {
                     return StatusCode(404, "Not Found");
@@ -182,33 +182,45 @@ namespace HelpDesk.Controllers
             }
         }
 
-        
+
 
         [HttpDelete]
         [Route("[controller]/{productId}/{companyId}")]
         public async Task<IActionResult> DeleteProduct(String productId, String companyId)
         {
-            var product = await _repository.Product.GetProductById(productId , companyId);
-            if (product == null)
+            try
             {
-                return StatusCode(500, "User Not Found");
-            }
-            else
-            {
+                var product = await _repository.Product.GetProductById(productId, companyId);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                // if there are tickets, don't delete the product.
+                var tickets = await _repository.Ticket.GetTicketsByProduct(product);
+                if (tickets.Count() > 0)
+                {
+                    return BadRequest("This product has tickets. Delete the tickets first.");
+                }
+
                 _repository.Product.DeleteProduct(product);
                 await _repository.Save();
-                 var deletedProduct = _mapper.Map<ProductDto>(product);
+                var deletedProduct = _mapper.Map<ProductDto>(product);
                 return Ok(deletedProduct);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
             }
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto product )
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto product)
         {
-            if(product != null)
+            if (product != null)
             {
-                var _product = await _repository.Product.GetProductById(product.ProductId , product.CompanyId);
-                if(_product != null)
+                var _product = await _repository.Product.GetProductById(product.ProductId, product.CompanyId);
+                if (_product != null)
                 {
                     var __product = _mapper.Map<ProductModel>(product);
                     _product.ProductName = __product.ProductName;
@@ -222,7 +234,7 @@ namespace HelpDesk.Controllers
                     if (company != null)
                     {
                         updatedProduct.CompanyName = company.CompanyName;
-                       
+
                     }
 
                     return Ok(updatedProduct);

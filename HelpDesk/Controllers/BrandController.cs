@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Controllers
 {
-    
+
     [Authorize]
     public class BrandController : ControllerBase
     {
@@ -116,7 +116,7 @@ namespace HelpDesk.Controllers
         [HttpGet]
         [Route("[controller]/{brandId}/{companyId}", Name = "BrandById")]
 
-        public async Task<IActionResult> GetBrandById(String brandId , String companyId)
+        public async Task<IActionResult> GetBrandById(String brandId, String companyId)
         {
             try
             {
@@ -184,14 +184,21 @@ namespace HelpDesk.Controllers
 
         [HttpDelete]
         [Route("[controller]/{productId}/{companyId}")]
-        public async Task<IActionResult> DeleteBrand(string productId , string companyId)
+        public async Task<IActionResult> DeleteBrand(string productId, string companyId)
         {
             try
             {
-                var brand = await _repository.Brand.GetBrandById(productId , companyId);
+                var brand = await _repository.Brand.GetBrandById(productId, companyId);
                 if (brand == null)
                 {
                     return NotFound();
+                }
+
+                // if there are tickets, don't delete the brand.
+                var tickets = await _repository.Ticket.GetTicketsByBrand(brand);
+                if (tickets.Count() > 0)
+                {
+                    return BadRequest("This brand has tickets. Delete the tickets first.");
                 }
 
                 _repository.Brand.DeleteBrand(brand);
