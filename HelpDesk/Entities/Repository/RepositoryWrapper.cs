@@ -18,6 +18,7 @@ namespace HelpDesk.Entities.Repository
         private ITicketTimelineRepository _ticketTimeline;
         private ITicketRepository _ticket;
         private IBrandRepository _brand;
+        private IConversationRepository _conversation;
 
         public ICompanyRepository Company
         {
@@ -160,6 +161,18 @@ namespace HelpDesk.Entities.Repository
                     _brand = new BrandRepository(_helpDeskContext);
                 }
                 return _brand;
+            }
+        }
+
+        public IConversationRepository Conversation
+        {
+            get
+            {
+                if (_conversation == null)
+                {
+                    _conversation = new ConversationRepository(_helpDeskContext);
+                }
+                return _conversation;
             }
         }
 

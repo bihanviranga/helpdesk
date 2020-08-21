@@ -16,6 +16,7 @@ namespace HelpDesk.Entities.Contracts
         ITicketTimelineRepository TicketTimeline { get; }
         ITicketRepository Ticket { get; }
         IBrandRepository Brand { get; }
+        IConversationRepository Conversation { get; }
 
         Task Save();
     }

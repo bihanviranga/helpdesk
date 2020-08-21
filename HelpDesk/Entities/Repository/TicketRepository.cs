@@ -42,11 +42,11 @@ namespace HelpDesk.Entities.Repository
         {
             if (userRole == "Manager")
             {
-                return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).ToListAsync();
+                return await FindByCondition(tkt => tkt.CompanyId.Equals(id.ToString())).OrderByDescending(tkt => tkt.TktCreatedDate).ToListAsync();
             }
             else if (userRole == "User")
             {
-                return await FindByCondition(tkt => tkt.CompanyId == id.ToString() && tkt.TktCreatedBy == userName).ToListAsync();
+                return await FindByCondition(tkt => tkt.CompanyId == id.ToString() && tkt.TktCreatedBy == userName).OrderByDescending(tkt => tkt.TktCreatedDate).ToListAsync();
             }
 
             return null;
