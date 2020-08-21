@@ -124,7 +124,7 @@ namespace HelpDesk.Controllers
                 return Json(token);
             }
 
-            return StatusCode(500, "User Not Found");
+            return StatusCode(404, "User Not Found");
         }
 
         [HttpGet]
