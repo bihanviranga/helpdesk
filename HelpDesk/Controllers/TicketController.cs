@@ -212,16 +212,16 @@ namespace HelpDesk.Controllers
         }
 
         [HttpPost]
-        [Route("[controller]/{userName}/{id}")]
+        [Route("[controller]/Assigning")]
 
-        public async Task<IActionResult> UserAssigned(String _userName , string id)
+        public async Task<IActionResult> UserAssigned([FromBody] TicketAssignDto _tktAssignData)
         {
-            var user = await _repository.User.GetUserByUserName(_userName);
+            var user = await _repository.User.GetUserByUserName(_tktAssignData.UserName);
             if (user != null)
             {
                 if(user.UserType == "HelpDesk" )
                 {
-                    var ticket = await _repository.Ticket.GetTicketById(new Guid(id));
+                    var ticket = await _repository.Ticket.GetTicketById(new Guid(_tktAssignData.TicketId));
                     if(ticket != null)
                     {
                         ticket.TktAssignedTo = user.UserName;
