@@ -25,11 +25,11 @@ namespace HelpDesk.Controllers
     {
         private readonly IRepositoryWrapper _repository;
         private readonly IMapper _mapper;
-        public UserController(IRepositoryWrapper repository , IMapper mapper)
+        public UserController(IRepositoryWrapper repository, IMapper mapper)
         {
             this._repository = repository;
             this._mapper = mapper;
-            
+
         }
 
         [HttpPost]
@@ -38,23 +38,23 @@ namespace HelpDesk.Controllers
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto newUser)
         {
 
-            
+
             try
             {
                 // convert incoming DTO to user model
-                 
+
 
 
                 var userEntity = _mapper.Map<UserModel>(newUser);
 
                 // PasswordHasher
-                
+
                 string password = newUser.Password;
 
                 var data = Encoding.ASCII.GetBytes(password);
                 var sha1 = new SHA1CryptoServiceProvider();
                 var hashed = sha1.ComputeHash(data);
-                
+
                 userEntity.PasswordHash = System.Text.Encoding.UTF8.GetString(hashed);
 
 
@@ -78,12 +78,12 @@ namespace HelpDesk.Controllers
         [Route("[controller]/CheckAvaibality")]
         public async Task<IActionResult> CheckAvaibality([FromBody] CheckAvaibalityDto data)
         {
-            return Ok(await _repository.User.CheckAvaibality(data) );
+            return Ok(await _repository.User.CheckAvaibality(data));
         }
 
         [HttpPost]
         [Route("[controller]/Login")]
-      
+
         public async Task<IActionResult> Login([FromBody] UserLoginDto model) //not working yet
         {
 
@@ -99,7 +99,7 @@ namespace HelpDesk.Controllers
 
 
             var result = await _repository.User.LoginUser(model);
-                
+
 
             if (result != null) // demo condition ** will change
             {
@@ -139,29 +139,29 @@ namespace HelpDesk.Controllers
                 var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
                 var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
                 var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
-                
-               if(userRole == "Manager")
+
+                if (userRole == "Manager")
                 {
-                    var users = await _repository.User.GetUsersByCondition(userType , userCompanyId);
-                    
+                    var users = await _repository.User.GetUsersByCondition(userType, userCompanyId);
+
                     //converting user model list to UserDto List
-                    foreach(var user in users)
+                    foreach (var user in users)
                     {
-                        if(user.CompanyId != null)
+                        if (user.CompanyId != null)
                         {
-                            usersList.Add( _mapper.Map<UserDto>(user));
+                            usersList.Add(_mapper.Map<UserDto>(user));
                         }
-                    
+
                     }
 
                     // adding Company Name to each user
-                    foreach(var user in usersList)
+                    foreach (var user in usersList)
                     {
                         var tempUserRes = await _repository.Company.GetCompanyById(new Guid(user.CompanyId));
-                        
-                        if(tempUserRes == null)
+
+                        if (tempUserRes == null)
                         {
-                            user.CompanyName = null ;
+                            user.CompanyName = null;
                         }
 
                         user.CompanyName = tempUserRes.CompanyName;
@@ -169,21 +169,22 @@ namespace HelpDesk.Controllers
 
                     return Ok(usersList);
 
-                }else if (userRole == "User")
+                } else if (userRole == "User")
                 {
                     return StatusCode(401, "401 Unauthorized  Access");
                 }
 
                 return StatusCode(500, "Something went wrong");
-               
+
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500, "Something went wrong");
             }
 
         }
 
+        
         [HttpGet]
         [Route("[controller]/{userName}")]
         [Authorize]

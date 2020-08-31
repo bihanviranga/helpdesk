@@ -118,5 +118,7 @@ namespace HelpDesk.Entities.Repository
         {
             return await FindByCondition(tkt => tkt.CompanyId.Equals(module.CompanyId)).Where(cpTkt => cpTkt.ModuleId.Equals(module.ModuleId)).ToListAsync();
         }
+
+        
     }
 }

@@ -211,6 +211,33 @@ namespace HelpDesk.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("[controller]/{userName}/{id}")]
+
+        public async Task<IActionResult> UserAssigned(String _userName , string id)
+        {
+            var user = await _repository.User.GetUserByUserName(_userName);
+            if (user != null)
+            {
+                if(user.UserType == "HelpDesk" )
+                {
+                    var ticket = await _repository.Ticket.GetTicketById(new Guid(id));
+                    if(ticket != null)
+                    {
+                        ticket.TktAssignedTo = user.UserName;
+
+                        _repository.Ticket.UpdateTicket(ticket);
+                        await _repository.Save();
+
+                        return Ok(ticket);
+                    }
+                    return StatusCode(404, "Ticket Not Found");
+                }
+                return StatusCode(401 , "User Not From HelpDesk");
+            }
+             return StatusCode(404, "User Not fount");
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateTicket([FromBody] TicketDto _tkt)
         {
