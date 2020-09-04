@@ -51,6 +51,9 @@ namespace HelpDesk.Controllers
                         var m = await _repository.Module.GetModuleById(tkt.ModuleId, tkt.CompanyId);
                         if (m != null) _tkt.ModuleName = m.ModuleName;
 
+                        var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
+                        if (b != null) _tkt.BrandName = b.BrandName;
+
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
                         if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
 
@@ -75,8 +78,13 @@ namespace HelpDesk.Controllers
                         var m = await _repository.Module.GetModuleById(tkt.ModuleId, tkt.CompanyId);
                         if (m != null) _tkt.ModuleName = m.ModuleName;
 
+                        var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
+                        if (b != null) _tkt.BrandName = b.BrandName;
+
                         var companyName = await _repository.Company.GetCompanyById(new Guid(tkt.CompanyId));
                         if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
+
+
 
 
                         ticketList.Add(_tkt);
@@ -123,6 +131,9 @@ namespace HelpDesk.Controllers
 
                     var companyName = await _repository.Company.GetCompanyById(new Guid(_ticket.CompanyId));
                     if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
+
+                    var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
+                    if (b != null) _tkt.BrandName = b.BrandName;
 
                     return Ok(_tkt);
                 }
@@ -211,6 +222,52 @@ namespace HelpDesk.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("[controller]/Assigning")]
+
+        public async Task<IActionResult> UserAssigned([FromBody] TicketAssignDto _tktAssignData)
+        {
+            var user = await _repository.User.GetUserByUserName(_tktAssignData.UserName);
+            if (user != null)
+            {
+                if(user.UserType == "HelpDesk" )
+                {
+                    var ticket = await _repository.Ticket.GetTicketById(new Guid(_tktAssignData.TicketId));
+                    if(ticket != null)
+                    {
+                        ticket.TktAssignedTo = user.UserName;
+
+                        _repository.Ticket.UpdateTicket(ticket);
+                        await _repository.Save();
+
+                        var _tkt = _mapper.Map<TicketDto>(ticket);
+
+                        var c = await _repository.Category.GetCategoryById(_tkt.CategoryId, _tkt.CompanyId);
+                        if (c != null) _tkt.CategoryName = c.CategoryName;
+
+                        var p = await _repository.Product.GetProductById(_tkt.ProductId, _tkt.CompanyId);
+                        if (p != null) _tkt.ProductName = p.ProductName;
+
+                        var m = await _repository.Module.GetModuleById(_tkt.ModuleId, _tkt.CompanyId);
+                        if (m != null) _tkt.ModuleName = m.ModuleName;
+
+                        var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
+                        if (b != null) _tkt.BrandName = b.BrandName;
+
+
+
+                        var companyName = await _repository.Company.GetCompanyById(new Guid(_tkt.CompanyId));
+                        if (companyName != null) _tkt.CompanyName = companyName.CompanyName;
+
+                        return Ok(_tkt);
+                    }
+                    return StatusCode(404, "Ticket Not Found");
+                }
+                return StatusCode(401 , "User Not From HelpDesk");
+            }
+             return StatusCode(404, "User Not fount");
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateTicket([FromBody] TicketDto _tkt)
         {
@@ -230,6 +287,10 @@ namespace HelpDesk.Controllers
 
                 var m = await _repository.Module.GetModuleById(updatedTkt.ModuleId, updatedTkt.CompanyId);
                 if (m != null) updatedTkt.ModuleName = m.ModuleName;
+
+                var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
+                if (b != null) _tkt.BrandName = b.BrandName; 
+
 
                 var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
                 if (companyName != null) updatedTkt.CompanyName = companyName.CompanyName;
