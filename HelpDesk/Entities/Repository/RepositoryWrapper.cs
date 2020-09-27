@@ -19,6 +19,7 @@ namespace HelpDesk.Entities.Repository
         private ITicketRepository _ticket;
         private IBrandRepository _brand;
         private IConversationRepository _conversation;
+        private IDashboardRepository _dashboard;
 
         public ICompanyRepository Company
         {
@@ -175,6 +176,19 @@ namespace HelpDesk.Entities.Repository
                 return _conversation;
             }
         }
+        public IDashboardRepository Dashboard
+        {
+            get
+            {
+                if (_dashboard == null)
+                {
+                    _dashboard = new DashboardRepository(_helpDeskContext);
+                }
+                return _dashboard;
+            }
+        }
+
+
 
         public RepositoryWrapper(HelpDeskContext helpDeskContext)
         {
