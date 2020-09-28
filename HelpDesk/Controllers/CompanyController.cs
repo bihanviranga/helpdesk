@@ -26,7 +26,6 @@ namespace HelpDesk.Controllers
         }
 
         [HttpGet]
-
         public async Task<IActionResult> GetAllCompanies()
         {
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -35,7 +34,9 @@ namespace HelpDesk.Controllers
 
             try
             {
-                return Ok(await _repository.Company.GetCompaniesByCondition(userType, userCompanyId));
+                var companies = await _repository.Company.GetCompaniesByCondition(userType, userCompanyId);
+
+                return Ok(await _repository.Company.GetCompanyDetails(companies));
 
             }
             catch (Exception)

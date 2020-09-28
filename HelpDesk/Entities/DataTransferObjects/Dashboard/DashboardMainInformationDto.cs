@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.Models
 {
-    public class DashboardModel
+    public class DashboardMainInformationDto
     {
-        public DashboardModel()
+        public DashboardMainInformationDto()
         {
             DashboardCompanyDeatails = new List<DashboardCompanyDetailsDto>();
         }

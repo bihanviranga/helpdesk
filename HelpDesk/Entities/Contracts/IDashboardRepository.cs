@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.Contracts
 {
-    public interface IDashboardRepository : IRepositoryBase<DashboardModel>
+    public interface IDashboardRepository : IRepositoryBase<DashboardMainInformationDto>
     {
-        Task<DashboardModel> GetDashboardDetails(string userType);
+        Task<DashboardMainInformationDto> GetDashboardDetails(string userType);
 
     }
 }
