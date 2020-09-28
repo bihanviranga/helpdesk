@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Entities.Repository
 {
-    public class DashboardRepository : RepositoryBase<DashboardModel>, IDashboardRepository
+    public class DashboardRepository : RepositoryBase<DashboardMainInformationDto>, IDashboardRepository
     {
         public DashboardRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext) { }
 
-        public async Task<DashboardModel> GetDashboardDetails(string userType)
+        public async Task<DashboardMainInformationDto> GetDashboardDetails(string userType)
         {
-            var details = new DashboardModel();
+            var details = new DashboardMainInformationDto();
             if (userType == "HelpDesk")
             {
                 var totalTickets = await HelpDeskContext.Set<TicketModel>().CountAsync();
@@ -34,7 +34,7 @@ namespace HelpDesk.Entities.Repository
 
                 foreach(var company in companies)
                 {
-                    var t = new DashboardCompanyDetailsDto();
+                    var companyDetails = new DashboardCompanyDetailsDto();
 
                     var totalTicketsInCompany = await HelpDeskContext.Set<TicketModel>()
                         .Where(t=>t.CompanyId.Equals(company.CompanyId)).CountAsync();
@@ -48,14 +48,14 @@ namespace HelpDesk.Entities.Repository
                     var inprogressTicketsInCompany = await HelpDeskContext.Set<TicketModel>()
                   .Where(t => t.CompanyId.Equals(company.CompanyId) & t.TktStatus.Equals("in-progress".ToString())).CountAsync();
 
-                    t.CompanyId = company.CompanyId;
-                    t.CompanyName = company.CompanyName;
-                    t.TotalTickets = totalTicketsInCompany;
-                    t.TotalOpenTickets = OpenTicketsInCompany;
-                    t.TotalClosedTickets = closedTicketsInCompany;
-                    t.TotalInprogressTickets = inprogressTicketsInCompany;
+                    companyDetails.CompanyId = company.CompanyId;
+                    companyDetails.CompanyName = company.CompanyName;
+                    companyDetails.TotalTickets = totalTicketsInCompany;
+                    companyDetails.TotalOpenTickets = OpenTicketsInCompany;
+                    companyDetails.TotalClosedTickets = closedTicketsInCompany;
+                    companyDetails.TotalInprogressTickets = inprogressTicketsInCompany;
 
-                    details.DashboardCompanyDeatails.Add(t);
+                    details.DashboardCompanyDeatails.Add(companyDetails);
                 }
 
               
