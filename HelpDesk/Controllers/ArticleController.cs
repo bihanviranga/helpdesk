@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
+using HelpDesk.Entities.DataTransferObjects.Article;
 using HelpDesk.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,19 +23,50 @@ namespace HelpDesk.Controllers
             this._repository = repository;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateArticle([FromBody]ArticleModel article)
+        [HttpPost]  
+        [Authorize]
+        public async Task<IActionResult> CreateArticle([FromBody]ArticleCreateDto article)
         {
-            if(article != null)
+                var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+                var userName = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+
+            if (article != null)
             {
-                 _repository.Article.Create(article);
-                await _repository.Save();
-                return Ok(Json("Done"));
+
+                if (userType == "HelpDesk" && userRole == "Manager")
+                {
+                    var _article = _mapper.Map<ArticleModel>(article);
+
+                    var user = await _repository.User.GetUserByUserName(userName);
+                    if (user != null)
+                    {
+                        _article.CreatedBy = user.UserName;
+                        _article.ArticleId = (Guid.NewGuid()).ToString();
+                        _article.CreatedDate = DateTime.Now;
+                    }
+
+                    _repository.Article.Create(_article);
+
+                    await _repository.Save();
+
+                    var insertArticle = await _repository.Article.GetArticleById(_article.ArticleId);
+                    
+                    
+
+                    return Ok( _mapper.Map<ArticleDto>(insertArticle) );
+                }
+                else
+                {
+                    return StatusCode(401, "Unauthorized Access");
+                }
             }
             else
             {
-                return Json("Something Went worng");
+                return StatusCode(400 , "Bad Request");
             }
+
            
         }
 
@@ -44,7 +77,8 @@ namespace HelpDesk.Controllers
             try
             {
                 var article = await _repository.Article.GetArticleById(articleId);
-                return Ok(article);
+                var _article = _mapper.Map<ArticleDto>(article);
+                return Ok(_article);
             }
             catch (Exception)
             {
