@@ -122,7 +122,11 @@ GO
 CREATE TABLE [dbo].[Tkt_Article]
 (
 	[ArticleID] [char](36) NOT NULL,
+	[CompanyID] [char](36) NULL,
 	[ProductID] [nvarchar](50) NULL,
+	[CategoryID] [nvarchar](20) NULL,
+	[BrandID] [nvarchar](20) NULL,
+	[ModuleID] [nvarchar](20) NULL,
 	[CreatedBy] [nvarchar](20) NOT NULL,
 	[AcceptedBy] [nvarchar](20) NULL,
 	[CreatedDate] [datetime] NULL,
@@ -131,6 +135,7 @@ CREATE TABLE [dbo].[Tkt_Article]
 	[ArticleContent] [nvarchar](max) NOT NULL,
 	[LastEditedDate] [datetime] NULL,
 	[LastEditedBy] [nvarchar](20) NULL,
+	[ArticleAttachment] [nvarchar](max) NULL,
 	CONSTRAINT [FK_Article_CreatedBy] FOREIGN KEY (CreatedBy) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION ON UPDATE CASCADE,
 	CONSTRAINT [PK_Tkt_Article] PRIMARY KEY CLUSTERED
 (

@@ -49,6 +49,20 @@ namespace HelpDesk.Entities
 
                 entity.Property(e => e.ArticleTitle).IsRequired();
 
+                entity.Property(e => e.BrandId)
+                    .HasColumnName("BrandID")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.CategoryId)
+                    .HasColumnName("CategoryID")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.CompanyId)
+                    .HasColumnName("CompanyID")
+                    .HasMaxLength(36)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.CreatedBy)
                     .IsRequired()
                     .HasMaxLength(20);
@@ -58,6 +72,10 @@ namespace HelpDesk.Entities
                 entity.Property(e => e.LastEditedBy).HasMaxLength(20);
 
                 entity.Property(e => e.LastEditedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ModuleId)
+                    .HasColumnName("ModuleID")
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.ProductId)
                     .HasColumnName("ProductID")
