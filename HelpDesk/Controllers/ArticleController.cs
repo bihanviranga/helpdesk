@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects.Article;
 using HelpDesk.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,9 +22,12 @@ namespace HelpDesk.Controllers
     {
         private readonly IRepositoryWrapper _repository;
         private readonly IMapper _mapper;
-        public ArticleController(IRepositoryWrapper repository, IMapper mapper)
+        private readonly IWebHostEnvironment _hostEnvironment;
+
+        public ArticleController(IRepositoryWrapper repository, IMapper mapper , IWebHostEnvironment hostEnvironment )
         {
             this._mapper = mapper;
+            this._hostEnvironment = hostEnvironment;
             this._repository = repository;
         }
 
@@ -37,6 +45,7 @@ namespace HelpDesk.Controllers
 
                 if (userType == "HelpDesk" && userRole == "Manager")
                 {
+
                     var _article = _mapper.Map<ArticleModel>(article);
 
                     var user = await _repository.User.GetUserByUserName(userName);
@@ -66,8 +75,6 @@ namespace HelpDesk.Controllers
             {
                 return StatusCode(400 , "Bad Request");
             }
-
-           
         }
 
         [HttpGet]
@@ -78,6 +85,7 @@ namespace HelpDesk.Controllers
             {
                 var article = await _repository.Article.GetArticleById(articleId);
                 var _article = _mapper.Map<ArticleDto>(article);
+                
                 return Ok(_article);
             }
             catch (Exception)
@@ -85,7 +93,6 @@ namespace HelpDesk.Controllers
                 return StatusCode(500, "Something went worng !!");
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetAllArticles()

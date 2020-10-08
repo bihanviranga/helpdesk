@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace HelpDesk.Entities.Models
 {
+
     public partial class ArticleModel
     {
         public string ArticleId { get; set; }
@@ -22,5 +23,7 @@ namespace HelpDesk.Entities.Models
         public string ArticleAttachment { get; set; }
 
         public virtual UserModel CreatedByNavigation { get; set; }
+
     }
+
 }
