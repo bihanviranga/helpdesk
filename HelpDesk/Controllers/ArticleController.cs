@@ -111,20 +111,34 @@ namespace HelpDesk.Controllers
       
 
         [HttpDelete]
+        [Authorize]
         [Route("[controller]/{articleId}")]
         public async Task<IActionResult> DeleteArticle(string articleId)
         {
-            var article = await _repository.Article.GetArticleById(articleId);
-            if (article != null)
+
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+
+            if(userRole == "Manager" && userType == "HelpDesk")
             {
-                _repository.Article.Delete(article);
-                await _repository.Save();
-                return Ok(Json("user has been deleted"));
+                var article = await _repository.Article.GetArticleById(articleId);
+                if (article != null)
+                {
+                    _repository.Article.Delete(article);
+                    await _repository.Save();
+                    return Ok(article.ArticleId);
+                }
+                else
+                {
+                    return StatusCode(404, "Article not found");
+                }
+
             }
             else
             {
-                return StatusCode(500, "Something went worng !!");
+                return StatusCode(401, "You dont have a permission for this action");
             }
+            
         }
     }
 }
