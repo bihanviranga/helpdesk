@@ -1,5 +1,6 @@
 using AutoMapper;
 using HelpDesk.Entities.DataTransferObjects;
+using HelpDesk.Entities.DataTransferObjects.Article;
 using HelpDesk.Entities.DataTransferObjects.Conversation;
 using HelpDesk.Entities.DataTransferObjects.Product;
 using HelpDesk.Entities.DataTransferObjects.ResTemplate;
@@ -64,6 +65,11 @@ namespace HelpDesk.Entities
             CreateMap<ConversationCreateDto, ConversationModel>();
             CreateMap<ConversationDto, ConversationModel>();
             CreateMap<ConversationModel, ConversationDto>();
+
+            CreateMap<ArticleModel , ArticleCreateDto >();
+            CreateMap<ArticleCreateDto , ArticleModel>();
+            CreateMap<ArticleDto , ArticleModel>();
+            CreateMap<ArticleModel ,ArticleDto>();
         }
     }
 }
