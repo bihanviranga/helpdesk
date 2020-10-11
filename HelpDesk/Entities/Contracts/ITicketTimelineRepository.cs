@@ -8,6 +8,7 @@ namespace HelpDesk.Entities.Contracts
     public interface ITicketTimelineRepository : IRepositoryBase<TicketTimelineModel>
     {
         void CreateTimelineEntry(TicketTimelineModel tktTimelineEntry);
+        void CreateTimelineEntry(string entryType, string ticketId, string userId);
         void UpdateTimelineEntry(TicketTimelineModel tktTimelineEntry);
         void DeleteTimelineEntry(TicketTimelineModel tktTimelineEntry);
         Task<IEnumerable<TicketTimelineModel>> GetEntriesByTicketId(Guid ticketId);

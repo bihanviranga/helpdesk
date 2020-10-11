@@ -16,6 +16,16 @@ namespace HelpDesk.Entities.Repository
             Create(tktTimelineEntry);
         }
 
+        public void CreateTimelineEntry(string entryType, string ticketId, string userId)
+        {
+            TicketTimelineModel timelineEntry = new TicketTimelineModel();
+            timelineEntry.TicketId = ticketId.ToString();
+            timelineEntry.TxnDateTime = DateTime.Now;
+            timelineEntry.TxnUserId = userId;
+            timelineEntry.TktEvent = entryType;
+            Create(timelineEntry);
+        }
+
         public void DeleteTimelineEntry(TicketTimelineModel tktTimelineEntry)
         {
             Delete(tktTimelineEntry);

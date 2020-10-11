@@ -197,6 +197,10 @@ namespace HelpDesk.Controllers
                 // convert the model back to a DTO for output
                 var createdTicket = _mapper.Map<TicketDto>(createTicketEntity);
 
+                var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                _repository.TicketTimeline.CreateTimelineEntry("tktCreated", createTicketEntity.TicketId, username);
+                await _repository.Save();
+
                 return CreatedAtRoute("TicketById", new { id = createTicketEntity.TicketId }, createdTicket);
             }
             catch (Exception)
@@ -230,10 +234,10 @@ namespace HelpDesk.Controllers
             var user = await _repository.User.GetUserByUserName(_tktAssignData.UserName);
             if (user != null)
             {
-                if(user.UserType == "HelpDesk" )
+                if (user.UserType == "HelpDesk")
                 {
                     var ticket = await _repository.Ticket.GetTicketById(new Guid(_tktAssignData.TicketId));
-                    if(ticket != null)
+                    if (ticket != null)
                     {
                         ticket.TktAssignedTo = user.UserName;
 
@@ -263,9 +267,9 @@ namespace HelpDesk.Controllers
                     }
                     return StatusCode(404, "Ticket Not Found");
                 }
-                return StatusCode(401 , "User Not From HelpDesk");
+                return StatusCode(401, "User Not From HelpDesk");
             }
-             return StatusCode(404, "User Not fount");
+            return StatusCode(404, "User Not fount");
         }
 
         [HttpPut]
@@ -289,7 +293,7 @@ namespace HelpDesk.Controllers
                 if (m != null) updatedTkt.ModuleName = m.ModuleName;
 
                 var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
-                if (b != null) _tkt.BrandName = b.BrandName; 
+                if (b != null) _tkt.BrandName = b.BrandName;
 
 
                 var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
