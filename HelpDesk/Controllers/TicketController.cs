@@ -222,6 +222,12 @@ namespace HelpDesk.Controllers
             {
                 _repository.Ticket.DeleteTicket(ticket);
                 await _repository.Save();
+
+                // timeline event
+                var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                _repository.TicketTimeline.CreateTimelineEntry("tktDeleted", id.ToString(), username);
+                await _repository.Save();
+
                 return Json("Ticket successfully removed");
             }
         }

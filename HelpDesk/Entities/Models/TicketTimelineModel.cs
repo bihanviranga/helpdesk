@@ -11,7 +11,6 @@ namespace HelpDesk.Entities.Models
         public string TxnValues { get; set; }
         public string TxnUserId { get; set; }
 
-        public virtual TicketModel Ticket { get; set; }
         public virtual UserModel TxnUser { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace HelpDesk.Entities.Repository
         public void CreateTimelineEntry(string entryType, string ticketId, string userId)
         {
             TicketTimelineModel timelineEntry = new TicketTimelineModel();
-            timelineEntry.TicketId = ticketId.ToString();
+            timelineEntry.TicketId = ticketId;
             timelineEntry.TxnDateTime = DateTime.Now;
             timelineEntry.TxnUserId = userId;
             timelineEntry.TktEvent = entryType;
