@@ -106,6 +106,9 @@ namespace HelpDesk.Controllers
                 var categotyname = (await _repository.Category.GetCategoryById(article.CategoryId, article.CompanyId));
                 if (categotyname != null) _article.CategoryName = categotyname.CategoryName;
 
+                var b = (await _repository.Brand.GetBrandById(article.BrandId, article.CompanyId));
+                if (b != null) _article.CategoryName = b.BrandName;
+
                 return Ok(_article);
             }
             catch (Exception)
