@@ -84,8 +84,28 @@ namespace HelpDesk.Controllers
             try
             {
                 var article = await _repository.Article.GetArticleById(articleId);
+
                 var _article = _mapper.Map<ArticleDto>(article);
+
+                var p = (await _repository.Product.GetProductById(article.ProductId, article.CompanyId));
+                if (p != null) _article.ProductName = p.ProductName;
+
+                try{ 
+                    var c = (await _repository.Company.GetCompanyById( new Guid(article.CompanyId)));
+                    if (c != null) _article.CompanyName = c.CompanyName;
+                }
+                catch
+                {
+                    _article.CompanyName = null;
+                }
                 
+
+                var m = (await _repository.Module.GetModuleById(article.ModuleId, article.CompanyId));
+                if (m != null) _article.ModuleName = m.ModuleName;
+
+                var categotyname = (await _repository.Category.GetCategoryById(article.CategoryId, article.CompanyId));
+                if (categotyname != null) _article.CategoryName = categotyname.CategoryName;
+
                 return Ok(_article);
             }
             catch (Exception)
@@ -97,9 +117,11 @@ namespace HelpDesk.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllArticles()
         {
+            
             try
             {
                 var articles = await _repository.Article.GetAllArticles();
+
                 return Ok(articles);
             }
             catch (Exception)
