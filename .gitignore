@@ -66,7 +66,7 @@ _ReSharper*
 *.ncrunch*
 .*crunch*.local.xml
 
-# Installshield output folder 
+# Installshield output folder
 [Ee]xpress
 
 # DocProject is a documentation generator add-in
@@ -120,6 +120,9 @@ src/.vs/config/applicationhost.config
 
 # Developer-specific configuration
 *.Development.json
+user.json
 
-# Local storage for ticket attachments
+# Local storage for attachments
 AttachmentStorage/
+Storage/
+
