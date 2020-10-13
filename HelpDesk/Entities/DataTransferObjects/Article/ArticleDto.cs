@@ -10,7 +10,6 @@ namespace HelpDesk.Entities.DataTransferObjects.Article
     public class ArticleDto
     {
         public string ArticleId { get; set; }
-        public string ProductId { get; set; }
         public string CreatedBy { get; set; }
         public string AcceptedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
@@ -20,5 +19,10 @@ namespace HelpDesk.Entities.DataTransferObjects.Article
         public DateTime? LastEditedDate { get; set; }
         public string LastEditedBy { get; set; }
         public string ArticleAttachment { get; set; }
+        public string CompanyName { get; set; }
+        public string ProductName { get; set; }
+        public string CategoryName { get; set; }
+        public string BrandName { get; set; }
+        public string ModuleName { get; set; }
     }
 }
