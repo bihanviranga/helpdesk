@@ -283,9 +283,28 @@ namespace HelpDesk.Controllers
         {
             try
             {
+                // Capture the old ticket status and username for timeline entry.
+                // Old ticket must be taken as no-tracking coz otherwise
+                // var tkt below will throw an error about 2 variables tracking
+                // the same object.
+                var tktId = new Guid(_tkt.TicketId);
+                var oldTicket = await _repository.Ticket.GetTicketById(tktId, true);
+                var oldStatus = oldTicket.TktStatus;
+                var newStatus = _tkt.TktStatus;
+
                 var tkt = _mapper.Map<TicketModel>(_tkt);
                 _repository.Ticket.UpdateTicket(tkt);
                 await _repository.Save();
+
+                // Timeline event
+                // If ticket status was changed in this update, create a timeline entry.
+                if (oldStatus != newStatus)
+                {
+                    var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                    _repository.TicketTimeline.CreateTimelineEntry("tktStatusChanged", _tkt.TicketId, username, newStatus);
+                    await _repository.Save();
+                }
+
 
                 var updatedTkt = _mapper.Map<TicketDto>(tkt);
 

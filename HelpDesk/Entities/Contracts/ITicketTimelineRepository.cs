@@ -9,6 +9,7 @@ namespace HelpDesk.Entities.Contracts
     {
         void CreateTimelineEntry(TicketTimelineModel tktTimelineEntry);
         void CreateTimelineEntry(string entryType, string ticketId, string userId);
+        void CreateTimelineEntry(string entryType, string ticketId, string userId, string txnValues);
         void UpdateTimelineEntry(TicketTimelineModel tktTimelineEntry);
         void DeleteTimelineEntry(TicketTimelineModel tktTimelineEntry);
         Task<IEnumerable<TicketTimelineModel>> GetEntriesByTicketId(Guid ticketId);

@@ -53,8 +53,12 @@ namespace HelpDesk.Entities.Repository
 
         }
 
-        public async Task<TicketModel> GetTicketById(Guid id)
+        public async Task<TicketModel> GetTicketById(Guid id, Boolean noTracking = false)
         {
+            if (noTracking)
+            {
+                return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString())).AsNoTracking().FirstOrDefaultAsync();
+            }
             return await FindByCondition(tkt => tkt.TicketId.Equals(id.ToString())).FirstOrDefaultAsync();
         }
 
@@ -119,6 +123,6 @@ namespace HelpDesk.Entities.Repository
             return await FindByCondition(tkt => tkt.CompanyId.Equals(module.CompanyId)).Where(cpTkt => cpTkt.ModuleId.Equals(module.ModuleId)).ToListAsync();
         }
 
-        
+
     }
 }

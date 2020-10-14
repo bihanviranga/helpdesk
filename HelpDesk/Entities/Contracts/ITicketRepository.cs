@@ -11,7 +11,7 @@ namespace HelpDesk.Entities.Contracts
     public interface ITicketRepository : IRepositoryBase<TicketModel>
     {
         Task<IEnumerable<TicketModel>> GetAllTicket();
-        Task<TicketModel> GetTicketById(Guid id);
+        Task<TicketModel> GetTicketById(Guid id, Boolean noTracking = false);
         Task<IEnumerable<TicketModel>> GetTicketByCondition(Guid id, string userRole, string userName);
         Task<string> GetTicketCodesByCondition(string id);
         Task<IEnumerable<TicketModel>> GetTicketsByBrand(CompanyBrandModel brand);
