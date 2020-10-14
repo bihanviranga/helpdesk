@@ -250,6 +250,11 @@ namespace HelpDesk.Controllers
                         _repository.Ticket.UpdateTicket(ticket);
                         await _repository.Save();
 
+                        // Timeline event
+                        var assignerUsername = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                        _repository.TicketTimeline.CreateTimelineEntry("tktUserAssigned", ticket.TicketId, assignerUsername, user.UserName);
+                        await _repository.Save();
+
                         var _tkt = _mapper.Map<TicketDto>(ticket);
 
                         var c = await _repository.Category.GetCategoryById(_tkt.CategoryId, _tkt.CompanyId);
