@@ -466,12 +466,6 @@ namespace HelpDesk.Entities
                     .HasColumnName("TxnUserID")
                     .HasMaxLength(20);
 
-                entity.HasOne(d => d.Ticket)
-                    .WithMany(p => p.TktTicketTimeline)
-                    .HasForeignKey(d => d.TicketId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Timeline_Ticket");
-
                 entity.HasOne(d => d.TxnUser)
                     .WithMany(p => p.TktTicketTimeline)
                     .HasForeignKey(d => d.TxnUserId)

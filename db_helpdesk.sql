@@ -362,7 +362,6 @@ CREATE TABLE [dbo].[Tkt_TicketTimeline]
 	[TktEvent] [nvarchar](max) NOT NULL,
 	[TxnValues] [nvarchar](max) NULL,
 	[TxnUserID] [nvarchar](20) NULL,
-	CONSTRAINT [FK_Timeline_Ticket] FOREIGN KEY (TicketID) REFERENCES [Tkt_TicketMaster](TicketID) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT [FK_Timeline_User] FOREIGN KEY (TxnUserID) REFERENCES [Tkt_User](UserName) ON DELETE NO ACTION,
 	CONSTRAINT [PK_Tkt_TicketTimeline_1] PRIMARY KEY CLUSTERED
 (

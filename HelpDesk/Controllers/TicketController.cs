@@ -197,6 +197,10 @@ namespace HelpDesk.Controllers
                 // convert the model back to a DTO for output
                 var createdTicket = _mapper.Map<TicketDto>(createTicketEntity);
 
+                var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                _repository.TicketTimeline.CreateTimelineEntry("tktCreated", createTicketEntity.TicketId, username);
+                await _repository.Save();
+
                 return CreatedAtRoute("TicketById", new { id = createTicketEntity.TicketId }, createdTicket);
             }
             catch (Exception)
@@ -218,6 +222,12 @@ namespace HelpDesk.Controllers
             {
                 _repository.Ticket.DeleteTicket(ticket);
                 await _repository.Save();
+
+                // timeline event
+                var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                _repository.TicketTimeline.CreateTimelineEntry("tktDeleted", id.ToString(), username);
+                await _repository.Save();
+
                 return Json("Ticket successfully removed");
             }
         }
@@ -230,14 +240,19 @@ namespace HelpDesk.Controllers
             var user = await _repository.User.GetUserByUserName(_tktAssignData.UserName);
             if (user != null)
             {
-                if(user.UserType == "HelpDesk" )
+                if (user.UserType == "HelpDesk")
                 {
                     var ticket = await _repository.Ticket.GetTicketById(new Guid(_tktAssignData.TicketId));
-                    if(ticket != null)
+                    if (ticket != null)
                     {
                         ticket.TktAssignedTo = user.UserName;
 
                         _repository.Ticket.UpdateTicket(ticket);
+                        await _repository.Save();
+
+                        // Timeline event
+                        var assignerUsername = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                        _repository.TicketTimeline.CreateTimelineEntry("tktUserAssigned", ticket.TicketId, assignerUsername, user.UserName);
                         await _repository.Save();
 
                         var _tkt = _mapper.Map<TicketDto>(ticket);
@@ -263,9 +278,9 @@ namespace HelpDesk.Controllers
                     }
                     return StatusCode(404, "Ticket Not Found");
                 }
-                return StatusCode(401 , "User Not From HelpDesk");
+                return StatusCode(401, "User Not From HelpDesk");
             }
-             return StatusCode(404, "User Not fount");
+            return StatusCode(404, "User Not fount");
         }
 
         [HttpPut]
@@ -273,9 +288,28 @@ namespace HelpDesk.Controllers
         {
             try
             {
+                // Capture the old ticket status and username for timeline entry.
+                // Old ticket must be taken as no-tracking coz otherwise
+                // var tkt below will throw an error about 2 variables tracking
+                // the same object.
+                var tktId = new Guid(_tkt.TicketId);
+                var oldTicket = await _repository.Ticket.GetTicketById(tktId, true);
+                var oldStatus = oldTicket.TktStatus;
+                var newStatus = _tkt.TktStatus;
+
                 var tkt = _mapper.Map<TicketModel>(_tkt);
                 _repository.Ticket.UpdateTicket(tkt);
                 await _repository.Save();
+
+                // Timeline event
+                // If ticket status was changed in this update, create a timeline entry.
+                if (oldStatus != newStatus)
+                {
+                    var username = User.Claims.FirstOrDefault(x => x.Type.Equals("UserName", StringComparison.InvariantCultureIgnoreCase)).Value;
+                    _repository.TicketTimeline.CreateTimelineEntry("tktStatusChanged", _tkt.TicketId, username, newStatus);
+                    await _repository.Save();
+                }
+
 
                 var updatedTkt = _mapper.Map<TicketDto>(tkt);
 
@@ -289,7 +323,7 @@ namespace HelpDesk.Controllers
                 if (m != null) updatedTkt.ModuleName = m.ModuleName;
 
                 var b = await _repository.Brand.GetBrandById(_tkt.BrandId, _tkt.CompanyId);
-                if (b != null) _tkt.BrandName = b.BrandName; 
+                if (b != null) _tkt.BrandName = b.BrandName;
 
 
                 var companyName = await _repository.Company.GetCompanyById(new Guid(updatedTkt.CompanyId));
