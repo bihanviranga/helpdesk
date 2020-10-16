@@ -9,7 +9,7 @@ namespace HelpDesk.Entities.Contracts
     {
         Task<IEnumerable<NotificationModel>> GetNotificationsForUser(string userId);
         Task<NotificationModel> GetNotificationById(Guid id);
-        void CreateNotification(NotificationModel notification);
+        void CreateNotification(string notificationType, string ticketId, string userId);
         void UpdateNotification(NotificationModel notification);
         void DeleteNotification(NotificationModel notification);
     }

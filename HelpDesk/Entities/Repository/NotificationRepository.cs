@@ -11,9 +11,20 @@ namespace HelpDesk.Entities.Repository
     {
         public NotificationRepository(HelpDeskContext helpDeskContext) : base(helpDeskContext) { }
 
-        public void CreateNotification(NotificationModel notification)
+        public void CreateNotification(string notificationType, string ticketId, string userId)
         {
+            NotificationModel notification = new NotificationModel();
             notification.NotifId = Guid.NewGuid().ToString();
+            notification.TicketId = ticketId;
+            notification.NotifUser = userId;
+            notification.NotifRead = false;
+            notification.NotifDate = DateTime.Now;
+
+            if (notificationType == "tktAssigned")
+            {
+                notification.NotifContent = "You have been assigned a new ticket.";
+            }
+
             Create(notification);
         }
 
