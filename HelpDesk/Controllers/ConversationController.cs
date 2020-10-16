@@ -38,14 +38,28 @@ namespace HelpDesk.Controllers
                 }
 
                 // convert incoming Dto to actual Model instance
-                var conversationEntity = _mapper.Map<ConversationModel>(conversation); 
+                var conversationEntity = _mapper.Map<ConversationModel>(conversation);
 
                 _repository.Conversation.CreateConversation(conversationEntity);
                 await _repository.Save();
 
+                // Notification event
+                // Conversation notifications go to 2 people,
+                // either the ticket owner, or the assigned user (if any).
+                var ticket = await _repository.Ticket.GetTicketById(new Guid(conversation.TicketId));
+                if (conversation.CvSender == ticket.TktAssignedTo)
+                {
+                    _repository.Notification.CreateNotification("tktReplied", conversation.TicketId, ticket.TktCreatedBy);
+                }
+                else if ((conversation.CvSender == ticket.TktCreatedBy) && (ticket.TktAssignedTo != null))
+                {
+                    _repository.Notification.CreateNotification("tktReplied", conversation.TicketId, ticket.TktAssignedTo);
+                }
+                await _repository.Save();
+
                 // convert the model back to a DTO for output
                 var createdConversation = _mapper.Map<ConversationDto>(conversationEntity);
-               
+
                 return Ok(createdConversation);
             }
             catch (Exception)
@@ -60,14 +74,14 @@ namespace HelpDesk.Controllers
         {
             var Ticket = await _repository.Ticket.GetTicketById(new Guid(TicketId));
             var conversationList = new List<ConversationDto>();
-            if(Ticket != null)
+            if (Ticket != null)
             {
                 var convercations = await _repository.Conversation.GetConversationByTicketId(new Guid(Ticket.TicketId));
 
                 foreach (var conversation in convercations)
                 {
                     var TempConversationDto = _mapper.Map<ConversationDto>(conversation);
-                    conversationList.Add(TempConversationDto);   
+                    conversationList.Add(TempConversationDto);
                 }
 
                 return Ok(conversationList);
