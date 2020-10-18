@@ -255,6 +255,10 @@ namespace HelpDesk.Controllers
                         _repository.TicketTimeline.CreateTimelineEntry("tktUserAssigned", ticket.TicketId, assignerUsername, user.UserName);
                         await _repository.Save();
 
+                        // Notification event
+                        _repository.Notification.CreateNotification("tktAssigned", ticket.TicketId, user.UserName);
+                        await _repository.Save();
+
                         var _tkt = _mapper.Map<TicketDto>(ticket);
 
                         var c = await _repository.Category.GetCategoryById(_tkt.CategoryId, _tkt.CompanyId);
