@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using HelpDesk.Entities.Contracts;
 using HelpDesk.Entities.DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Controllers
 {
     [Route("notification")]
     [ApiController]
+    [Authorize]
     public class NotificationController : ControllerBase
     {
         private IRepositoryWrapper _repository;
