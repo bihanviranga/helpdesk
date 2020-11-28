@@ -223,7 +223,9 @@ namespace HelpDesk.Controllers
         [HttpPost]
         [Route("[controller]/resetPassword")]
         [Authorize]
-        public async Task<IActionResult> ResetPasswordPhaseOne([FromBody] ResetPasswordDto userData)
+        
+        //check the permissions and resturn user Details if the user have permission -----> reset password phase 01
+        public async Task<IActionResult> CheckResetPermissionAndUserAvailability([FromBody] ResetPasswordDto userData)
         {
             // manager information
             var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
@@ -282,7 +284,9 @@ namespace HelpDesk.Controllers
        [HttpPut]
         [Route("[controller]/newPassword")]
         [Authorize]
-        public async Task<IActionResult> ResetPasswordPhaseTwo([FromBody] newPassword updatedData)
+
+        // if reset phase 01 pass then manager can reset password form this function
+        public async Task<IActionResult> ResetPassword([FromBody] newPassword updatedData)
         {
 
             try
