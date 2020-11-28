@@ -94,5 +94,10 @@ namespace HelpDesk.Entities.Repository
             }
 
         }
+
+        public void ResetPassword(UserModel updatedUser)
+        {
+            Update(updatedUser);   
+        }
     }
 }

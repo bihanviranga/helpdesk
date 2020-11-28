@@ -43,8 +43,6 @@ namespace HelpDesk.Controllers
             {
                 // convert incoming DTO to user model
 
-
-
                 var userEntity = _mapper.Map<UserModel>(newUser);
 
                 // PasswordHasher
@@ -221,5 +219,98 @@ namespace HelpDesk.Controllers
                 return Ok(deletedUser);
             }
         }
+
+        [HttpPost]
+        [Route("[controller]/resetPassword")]
+        [Authorize]
+        
+        //check the permissions and resturn user Details if the user have permission -----> reset password phase 01
+        public async Task<IActionResult> CheckResetPermissionAndUserAvailability([FromBody] ResetPasswordDto userData)
+        {
+            // manager information
+            var userType = User.Claims.FirstOrDefault(x => x.Type.Equals("UserType", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userRole = User.Claims.FirstOrDefault(x => x.Type.Equals("UserRole", StringComparison.InvariantCultureIgnoreCase)).Value;
+            var userCompanyId = User.Claims.FirstOrDefault(x => x.Type.Equals("CompanyId", StringComparison.InvariantCultureIgnoreCase)).Value;
+
+            try
+            {
+                var user = await _repository.User.GetUserByUserName(userData.UserName);
+
+                if (user != null)
+                {
+                    if (userRole == "Manager")
+                    {
+                        if (userType == "HelpDesk")
+                        {
+                            if (user.UserType == "HelpDesk" && user.CompanyId == userCompanyId)
+                            {
+                                return Ok(_mapper.Map<UserDto>(user));
+                            }
+                            else if (user.UserType == "Client" && user.UserRole == "Manager")
+                            {
+
+                                return Ok(_mapper.Map<UserDto>(user));
+                            }
+                            else
+                            {
+                                return StatusCode(401, "401 Unauthorized  Access");
+                            }
+                        }
+                        else if (userType == "Client" && user.CompanyId == userCompanyId)
+                        {
+                            return Ok(_mapper.Map<UserDto>(user));
+                        }
+                        else
+                        {
+                            return StatusCode(401, "401 Unauthorized  Access");
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode(401, "401 Unauthorized  Access");
+                    }
+                }
+                else
+                {
+                    return StatusCode(404, "404 User Not Found");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(404, "404 User Not Found");
+            }
+        }
+
+       [HttpPut]
+        [Route("[controller]/newPassword")]
+        [Authorize]
+
+        // if reset phase 01 pass then manager can reset password form this function
+        public async Task<IActionResult> ResetPassword([FromBody] newPassword updatedData)
+        {
+
+            try
+            {
+                var updatedUser = await _repository.User.GetUserByUserName(updatedData.UserName);
+
+                var data = Encoding.ASCII.GetBytes(updatedData.NewPassword);
+                var sha1 = new SHA1CryptoServiceProvider();
+                var hashed = sha1.ComputeHash(data);
+
+                updatedUser.PasswordHash = System.Text.Encoding.UTF8.GetString(hashed);
+
+                _repository.User.ResetPassword(updatedUser);
+                await _repository.Save();
+
+                return StatusCode(201, "201 Updated");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something Went wrong");
+            }
+
+        } 
+
+
     }
 }

@@ -15,6 +15,8 @@ namespace HelpDesk.Entities.Contracts
         Task<UserModel> LoginUser(UserLoginDto userLoginDto);
         Task<IEnumerable<UserModel>> GetUsersByCondition(string userType , string userCompanyId);
 
+        void ResetPassword(UserModel updatedUser);
+
         Task<string> CheckAvaibality(CheckAvaibalityDto data);
         void CreateUser(UserModel tktUser);
         void DeleteUser(UserModel user);
