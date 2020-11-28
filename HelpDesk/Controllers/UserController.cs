@@ -244,12 +244,18 @@ namespace HelpDesk.Controllers
                         {
                             if (user.UserType == "HelpDesk" && user.CompanyId == userCompanyId)
                             {
-                                return Ok(_mapper.Map<UserDto>(user));
+                                var com =  await _repository.Company.GetCompanyById(new Guid(user.CompanyId));
+                                var _user = _mapper.Map<UserDto>(user);
+                                _user.CompanyName = com.CompanyName;
+                                return Ok(_user);
                             }
                             else if (user.UserType == "Client" && user.UserRole == "Manager")
                             {
 
-                                return Ok(_mapper.Map<UserDto>(user));
+                                var com = await _repository.Company.GetCompanyById(new Guid(user.CompanyId));
+                                var _user = _mapper.Map<UserDto>(user);
+                                _user.CompanyName = com.CompanyName;
+                                return Ok(_user);
                             }
                             else
                             {
@@ -258,7 +264,10 @@ namespace HelpDesk.Controllers
                         }
                         else if (userType == "Client" && user.CompanyId == userCompanyId)
                         {
-                            return Ok(_mapper.Map<UserDto>(user));
+                            var com = await _repository.Company.GetCompanyById(new Guid(user.CompanyId));
+                            var _user = _mapper.Map<UserDto>(user);
+                            _user.CompanyName = com.CompanyName;
+                            return Ok(_user);
                         }
                         else
                         {
